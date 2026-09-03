@@ -1,0 +1,80 @@
+[
+  {
+    "strategy": "mcts",
+    "games": 10,
+    "wins": 4,
+    "draws": 6,
+    "losses": 0,
+    "points": 18,
+    "first_games": 5,
+    "first_points": 9,
+    "second_games": 5,
+    "second_points": 9,
+    "rank": 1
+  },
+  {
+    "strategy": "minimax",
+    "games": 10,
+    "wins": 3,
+    "draws": 7,
+    "losses": 0,
+    "points": 16,
+    "first_games": 5,
+    "first_points": 9,
+    "second_games": 5,
+    "second_points": 7,
+    "rank": 2
+  },
+  {
+    "strategy": "heuristic",
+    "games": 10,
+    "wins": 3,
+    "draws": 6,
+    "losses": 1,
+    "points": 15,
+    "first_games": 5,
+    "first_points": 9,
+    "second_games": 5,
+    "second_points": 6,
+    "rank": 3
+  },
+  {
+    "strategy": "alpha_beta",
+    "games": 10,
+    "wins": 2,
+    "draws": 8,
+    "losses": 0,
+    "points": 14,
+    "first_games": 5,
+    "first_points": 9,
+    "second_games": 5,
+    "second_points": 5,
+    "rank": 4
+  },
+  {
+    "strategy": "alpha_zero",
+    "games": 10,
+    "wins": 3,
+    "draws": 2,
+    "losses": 5,
+    "points": 11,
+    "first_games": 5,
+    "first_points": 8,
+    "second_games": 5,
+    "second_points": 3,
+    "rank": 5
+  },
+  {
+    "strategy": "random",
+    "games": 10,
+    "wins": 0,
+    "draws": 1,
+    "losses": 9,
+    "points": 1,
+    "first_games": 5,
+    "first_points": 1,
+    "second_games": 5,
+    "second_points": 0,
+    "rank": 6
+  }
+]

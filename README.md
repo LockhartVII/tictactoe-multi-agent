@@ -12,6 +12,7 @@ tictactoe/
 ├── minmax.py                   # Minimax 版本、测试和可配置策略对战入口
 ├── strategies.py               # Alpha-Beta、MCTS 和 AlphaZero 策略
 ├── alphazero_adapter.py        # 预训练 AlphaZero 权重的 PyTorch 推理适配器
+├── tournament.py               # 两两策略对战、统计和可视化
 └── models/
     └── best-25eps-25sim-10epch.pth.tar
 ```
@@ -68,7 +69,7 @@ conda create -n tictactoe-gpu python=3.11 -y
 conda activate tictactoe-gpu
 
 python -m pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
-python -m pip install numpy h5py
+python -m pip install numpy h5py matplotlib
 ```
 
 验证 CUDA 是否真的可用：
@@ -104,7 +105,7 @@ sudo apt-get install -y python3-venv python3-pip libopenblas-dev
 python3 -m venv .venv --system-site-packages
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install numpy h5py
+python -m pip install numpy h5py matplotlib
 ```
 
 接着安装与本机 JetPack 对应的 ARM64 PyTorch。下面是命令格式，`TORCH_INSTALL` 请替换成 NVIDIA 页面上与你的 JetPack 和 Python 版本完全匹配的 wheel 地址：
@@ -139,7 +140,7 @@ python -c "import torch; print(torch.__version__); print('CUDA:', torch.cuda.is_
 python main.py
 ```
 
-基础版本会运行规则测试，再启动一局多进程对战，默认由启发式 Player X 对随机 Player O。运行结束后会生成 `messages.jsonl`。
+基础版本会运行规则测试，再启动一局多进程对战，默认由启发式 Player X 对随机 Player O。运行结束后会在 `logs/basic/messages.jsonl` 保存消息。
 
 运行 Minimax 版本及其测试：
 
@@ -159,6 +160,35 @@ python minmax.py --x-strategy heuristic --o-strategy alpha_zero --games 1
 python minmax.py --x-strategy alpha_beta --o-strategy mcts --games 5
 python minmax.py --x-strategy minimax --o-strategy alpha_beta --games 5
 python minmax.py --x-strategy random --o-strategy alpha_zero --games 10
+```
+
+运行全部策略的两两对战和可视化测试：
+
+```bash
+python tournament.py
+```
+
+锦标赛包含 `random`、`heuristic`、`minimax`、`alpha_beta`、`mcts` 和 `alpha_zero` 六种策略。每一对策略进行两局 3×3 对局，双方各先手一次。胜局记 3 分，和棋记 1 分，负局记 0 分，最后按照总分、胜局数和策略名排序。结果会写入 `evaluation/results/strategy_tournament.csv` 和 `evaluation/results/strategy_tournament.json`，图表位于 `evaluation/figures/strategy_tournament.png`，每一局的 JSONL 日志按对局放在 `logs/tournament/<strategy>_vs_<strategy>/` 中。
+
+本次完整测试的结果如下，图中左侧是胜平负，右侧是先手和后手的得分：
+
+![3×3 策略锦标赛结果](evaluation/figures/strategy_tournament.png)
+
+这次 30 局样本中，`mcts` 以 18 分排名第一。详细数据保存在项目内的 CSV 和 JSON 文件中，重新运行锦标赛后会按新结果更新。
+
+| 排名 | 策略 | 总分 | 胜 | 和 | 负 | 先手分 | 后手分 |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | `mcts` | 18 | 4 | 6 | 0 | 9 | 9 |
+| 2 | `minimax` | 16 | 3 | 7 | 0 | 9 | 7 |
+| 3 | `heuristic` | 15 | 3 | 6 | 1 | 9 | 6 |
+| 4 | `alpha_beta` | 14 | 2 | 8 | 0 | 9 | 5 |
+| 5 | `alpha_zero` | 11 | 3 | 2 | 5 | 8 | 3 |
+| 6 | `random` | 1 | 0 | 1 | 9 | 1 | 0 |
+
+如果只想快速比较几种策略，可以指定参赛者：
+
+```bash
+python tournament.py --strategies heuristic minimax alpha_beta mcts
 ```
 
 每个位置使用 `0` 到 `8` 编号，布局如下：
@@ -183,7 +213,7 @@ python minmax.py --x-strategy random --o-strategy alpha_zero --games 10
 
 ## 日志和测试
 
-Logger 会把消息逐行写入 JSONL 文件，每一行对应一条通信消息。测试重点包括立即获胜、阻止对手获胜、避免必输、动作合法性、游戏结束通知和 Logger 是否收到完整记录。对战产生的 `messages*.jsonl` 属于运行产物，已经在 `.gitignore` 中排除。
+Logger 会把消息逐行写入 JSONL 文件，每一行对应一条通信消息。基础运行日志位于 `logs/basic/`，Minimax 对战日志位于 `logs/minmax/`，策略锦标赛日志位于 `logs/tournament/`。测试重点包括立即获胜、阻止对手获胜、避免必输、动作合法性、游戏结束通知和 Logger 是否收到完整记录。统计文件和图片分别归档在 `evaluation/results/` 与 `evaluation/figures/`，项目根目录不会直接堆放运行产物。
 
 模型权重文件较大，当前仓库保留了能直接运行 AlphaZero 演示的 checkpoint。它只用于推理，程序启动时会自动从项目目录加载。
 

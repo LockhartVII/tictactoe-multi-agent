@@ -195,7 +195,12 @@ def run_new_strategy_tests():
     print("Alpha-Beta和MCTS策略测试通过。")
 
 # 完整多智能体游戏
-def run_one_game(game_number, player_x_strategy="heuristic", player_o_strategy="minimax"):
+def run_one_game(
+    game_number,
+    player_x_strategy="heuristic",
+    player_o_strategy="minimax",
+    log_relative_path=None,
+):
     """启动四个Agent进程，运行一局并返回结果。"""
     bus = mp.Queue()
 
@@ -232,7 +237,7 @@ def run_one_game(game_number, player_x_strategy="heuristic", player_o_strategy="
         args=(inboxes["referee"], bus)
     )
 
-    log_filename = f"messages_game_{game_number}.jsonl"
+    log_filename = log_relative_path or f"logs/minmax/messages_game_{game_number}.jsonl"
     logger = mp.Process(
         target=logger_agent,
         args=(inboxes["logger"], log_filename)

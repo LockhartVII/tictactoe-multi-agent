@@ -268,7 +268,10 @@ def referee_agent(inbox, bus):
 def logger_agent(inbox, filename):
     print("logger PID =", os.getpid())
 
-    with open(project_path(filename), "w", encoding="utf-8") as file:
+    log_path = project_path(filename)
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(log_path, "w", encoding="utf-8") as file:
         while True:
             message = inbox.get()
 
@@ -365,7 +368,7 @@ def main():
 
     logger = mp.Process(
         target=logger_agent,
-        args=(inboxes["logger"], "messages.jsonl")
+        args=(inboxes["logger"], "logs/basic/messages.jsonl")
     )
 
     processes = [player_x, player_o, referee, logger]
@@ -410,7 +413,7 @@ def main():
 
     print("所有进程已经结束。")
     print("最终结果：", final_result)
-    print("日志文件：messages.jsonl")
+    print("日志文件：logs/basic/messages.jsonl")
 
 
 if __name__ == "__main__":

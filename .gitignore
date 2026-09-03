@@ -2,6 +2,7 @@ __pycache__/
 *.py[cod]
 *.log
 messages*.jsonl
+logs/
 .idea/
 .playwright-cli/
 .venv/
