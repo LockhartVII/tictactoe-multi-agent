@@ -8,6 +8,7 @@ from main import (
     heuristic_move,
     logger_agent,
     make_message,
+    project_path,
     random_move,
     referee_agent,
     route_message
@@ -279,7 +280,7 @@ def run_one_game(game_number, player_x_strategy="heuristic", player_o_strategy="
         process.join()
 
     # Test 4、5、6：检查O发送动作、MAS结束、Logger正常记录。
-    with open(log_filename, "r", encoding="utf-8") as file:
+    with open(project_path(log_filename), "r", encoding="utf-8") as file:
         log_messages = [
             json.loads(line)
             for line in file

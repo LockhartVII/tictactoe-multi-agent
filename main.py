@@ -4,6 +4,7 @@ import time
 import json
 import queue
 import os
+from pathlib import Path
 
 from strategies import alpha_beta_move, alpha_zero_move, mcts_move
 
@@ -14,6 +15,18 @@ from environment import (
     terminal,
     render
 )
+
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+
+def project_path(filename):
+    """把运行产物放到项目目录，避免从不同工作目录启动时跑偏。"""
+    path = Path(filename)
+    if path.is_absolute():
+        return path
+    return PROJECT_ROOT / path
+
 
 def make_message(
         sender,
@@ -255,7 +268,7 @@ def referee_agent(inbox, bus):
 def logger_agent(inbox, filename):
     print("logger PID =", os.getpid())
 
-    with open(filename, "w", encoding="utf-8") as file:
+    with open(project_path(filename), "w", encoding="utf-8") as file:
         while True:
             message = inbox.get()
 

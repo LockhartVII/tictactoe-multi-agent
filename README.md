@@ -1,8 +1,7 @@
 # Multi-Agent Tic-Tac-Toe
 
-这是一个用 Python 写的小型多智能体井字棋项目。棋盘只有 3×3，却足够把多进程通信、角色分工、策略替换、日志记录和边缘设备部署串起来。它更像一个可以运行、可以拆开观察的实验场：每个 Agent 都有自己的进程和收件箱，裁判掌握唯一的正式棋盘，消息总线负责传递消息，Logger 把整局过程留下来。棋子不会说话，但进程之间交流得很勤快。
-
-项目目前支持基础启发式、随机、Minimax、Alpha-Beta、MCTS，以及加载预训练权重的 AlphaZero 推理策略。AlphaZero 这里采用的是只推理接入，不包含训练流程。预训练模型来自开源项目 [AlphaZero General](https://github.com/suragnair/alpha-zero-general) 的 Tic-Tac-Toe Keras 权重；项目会把 HDF5 权重加载到等价的 PyTorch 网络中，实际落子时读取 policy head 的概率，并过滤掉已经占用的位置。如果模型文件缺失或加载失败，Agent 会自动退回 MCTS，程序仍然可以继续完成对局。
+这是一个用 Python 写的小型多智能体井字棋项目。棋盘只有 3×3，却足够把多进程通信、角色分工、策略替换、日志记录和边缘设备部署串起来。每个 Agent 都有自己的进程和收件箱，裁判掌握唯一的正式棋盘，消息总线负责传递消息，Logger 负责留下整局过程。
+项目目前支持基础启发式、随机、Minimax、Alpha-Beta、MCTS，以及加载预训练权重的 AlphaZero 推理策略。AlphaZero 模块采用只推理接入，不包含训练流程。项目会把模型权重加载到等价的 PyTorch 网络中，实际落子时读取 policy head 的概率，并过滤掉已经占用的位置。如果模型文件缺失或加载失败，Agent 会自动退回 MCTS，程序仍然可以继续完成对局。
 
 ## 项目结构
 
@@ -28,9 +27,28 @@ tictactoe/
 | `minimax` | `minmax.py` | 穷举后续状态，使用胜负分数选择最优动作 | 3×3 棋盘上的确定性强基线 |
 | `alpha_beta` | `strategies.py` | Minimax 加 Alpha-Beta 剪枝 | 和 Minimax 结果相近，搜索更利落 |
 | `mcts` | `strategies.py` | 使用 UCT 进行随机模拟和树搜索 | 观察搜索预算对决策的影响 |
-| `alpha_zero` | `alphazero_adapter.py` | 使用开源预训练网络输出 policy，再选合法位置中的最高概率动作 | 体验模型推理接入和 GPU/边缘设备部署 |
+| `alpha_zero` | `alphazero_adapter.py` | 使用预训练网络输出 policy，再从合法位置中选择概率最高的动作 | 体验模型推理接入和 GPU/边缘设备部署 |
 
 `alpha_zero` 当前接入的是神经网络推理部分，完整的 AlphaZero 自我对弈训练和网络引导树搜索还没有放进这个版本。这样设计让接口简单、启动快，适合先观察一个已有模型如何进入多智能体系统；后续如果要继续研究，再把 policy/value 与树搜索合起来即可。
+
+## Agent 工作流
+
+下面这张图只保留一局棋最重要的几步。X 和 O 都属于 Player，区别只在于它们使用的策略不同。
+
+```mermaid
+flowchart TD
+    A[Supervisor 启动] --> B[Referee 发出棋盘副本]
+    B --> C[Player 根据策略选择一步]
+    C --> D[Supervisor 转发动作]
+    D --> E{Referee 检查动作}
+    E -->|不合法：重选| C
+    E -->|合法：更新棋盘| F{游戏结束了吗？}
+    F -->|没有| B
+    F -->|结束| G[通知 Player]
+    G --> H[Logger 保存全部消息]
+```
+
+Supervisor 负责转发消息，Referee 负责棋盘和规则，Player 负责选择动作，Logger 负责记录。这样读一局 JSONL 时，可以按图中的顺序回放比赛。
 
 ## Windows x86-64 安装
 
@@ -111,7 +129,7 @@ python3 -m pip install --no-cache-dir "$TORCH_INSTALL"
 python -c "import torch; print(torch.__version__); print('CUDA:', torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU mode')"
 ```
 
-如果设备上的 JetPack 已经自带可用的 `torch`，先通过上面的验证命令检查，确认成功后不必重复安装。普通 PyPI 的 x86 CUDA wheel 不能直接替代 Jetson 的 ARM64 wheel，这一步最容易让人和电脑一起陷入沉思。
+如果设备上的 JetPack 已经自带可用的 `torch`，先通过上面的验证命令检查，确认成功后不必重复安装。普通 PyPI 的 x86 CUDA wheel 不能直接替代 Jetson 的 ARM64 wheel。
 
 ## 运行项目
 
@@ -155,13 +173,7 @@ python minmax.py --x-strategy random --o-strategy alpha_zero --games 10
 
 ## PyCharm
 
-Windows 下把项目解释器设置为：
-
-```text
-C:\Users\Ywt\anaconda3\envs\tictactoe-gpu\python.exe
-```
-
-项目中已经准备了三个运行思路：基础 `main.py`、五局 `minmax.py`，以及带参数的 AlphaZero 推理演示。也可以在 PyCharm 的运行配置里填写：
+项目中已经准备了三个运行思路：基础 `main.py`、五局 `minmax.py`，以及带参数的 AlphaZero 推理演示。Windows 下选择 Conda 环境 `tictactoe-gpu` 作为项目解释器即可，PyCharm 会自动使用该环境中的 Python。也可以在 PyCharm 的运行配置里填写：
 
 ```text
 脚本：minmax.py
@@ -173,7 +185,11 @@ C:\Users\Ywt\anaconda3\envs\tictactoe-gpu\python.exe
 
 Logger 会把消息逐行写入 JSONL 文件，每一行对应一条通信消息。测试重点包括立即获胜、阻止对手获胜、避免必输、动作合法性、游戏结束通知和 Logger 是否收到完整记录。对战产生的 `messages*.jsonl` 属于运行产物，已经在 `.gitignore` 中排除。
 
-模型权重文件较大，当前仓库保留了能直接运行 AlphaZero 演示的预训练 checkpoint。它只用于推理，不代表本项目重新训练了 AlphaZero。模型和网络结构的来源、许可信息请以 [AlphaZero General](https://github.com/suragnair/alpha-zero-general) 原仓库为准。
+模型权重文件较大，当前仓库保留了能直接运行 AlphaZero 演示的 checkpoint。它只用于推理，程序启动时会自动从项目目录加载。
+
+## 致谢与许可
+
+AlphaZero 模块使用的网络结构、权重文件及相关适配遵循 [AlphaZero General](https://github.com/suragnair/alpha-zero-general) 项目的 MIT License。该说明用于保留模型和代码的许可信息。
 
 ## 后续可以怎么玩
 
