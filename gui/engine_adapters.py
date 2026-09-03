@@ -49,7 +49,9 @@ class KataGoAdapter:
         self._command("boardsize", str(board_size))
         self._command("clear_board")
         self._command("komi", "7.5")
-        self._command("kata-time_settings", "none")
+        # Keep the GUI responsive while retaining a real engine search.
+        self._command("kata-time_settings", "byoyomi", "0", "0.5", "1")
+        self._command("kata-set-param", "allowResignation", "false")
 
     def _command(self, command, *arguments):
         if self.process.poll() is not None:
@@ -82,8 +84,12 @@ class KataGoAdapter:
         if not lines:
             return "pass"
         move = lines[-1].lstrip("=").strip().lower()
-        if move == "pass" or len(move) < 2:
+        if move == "pass":
             return "pass"
+        if move == "resign":
+            return "resign"
+        if len(move) < 2:
+            return None
         column = ord(move[0].upper()) - ord("A") - (1 if move[0].upper() > "I" else 0)
         row = self.board_size - int(move[1:])
         return row, column

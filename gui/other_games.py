@@ -379,7 +379,16 @@ class OtherGamesController:
                     raise ProtocolError("KataGo returned no move")
                 if move == "pass":
                     self._register_go_pass(sync_engine=False)
-                elif not go_play(self.board, move[0], move[1], self.current_player):
+                elif move == "resign":
+                    move = self._fallback_go_move()
+                    if move is None:
+                        self._register_go_pass(sync_engine=True)
+                    else:
+                        self.go_engine.play(self.current_player, move[0], move[1])
+                        go_play(self.board, move[0], move[1], self.current_player, self.go_history)
+                        self.go_passes = 0
+                        self.current_player = 2 if self.current_player == 1 else 1
+                elif not go_play(self.board, move[0], move[1], self.current_player, self.go_history):
                     self.engine_status = "AI returned an illegal move"
                     self.game_over = True
                 else:
@@ -421,6 +430,15 @@ class OtherGamesController:
             self.draw_game = False
         else:
             self.current_player = 2 if self.current_player == 1 else 1
+
+    def _fallback_go_move(self):
+        """Choose a legal point if an engine build ignores allowResignation."""
+        for row in range(self.size):
+            for column in range(self.size):
+                trial = [line.copy() for line in self.board]
+                if go_play(trial, row, column, self.current_player, set(self.go_history)):
+                    return row, column
+        return None
 
     def pass_turn(self):
         if self.kind != "go" or self.game_over or self.mode == "ai_vs_ai":
@@ -524,7 +542,8 @@ class OtherGamesController:
         pygame.draw.rect(surface, (74, 50, 30), river_band)
         for column in range(9):
             x = round(left + column * cell_x)
-            pygame.draw.line(surface, colour, (x, round(top)), (x, round(bottom)), 2)
+            pygame.draw.line(surface, colour, (x, round(top)), (x, round(top + 4 * cell_y)), 2)
+            pygame.draw.line(surface, colour, (x, round(top + 5 * cell_y)), (x, round(bottom)), 2)
         for row in range(10):
             y = round(top + row * cell_y)
             pygame.draw.line(surface, colour, (round(left), y), (round(right), y), 2)
