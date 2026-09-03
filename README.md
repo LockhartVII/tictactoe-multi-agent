@@ -255,7 +255,7 @@ python main.py
 python upgrade.py
 ```
 
-进入井字棋后，先选择棋盘规模，再选择人机或 AI 对战；AI 对战时可以分别指定 X、O 的策略。界面会按尺寸加载 `models/alphazero/*_best.pt`，对局日志统一保存到 `logs/gui/tictactoe/`。GUI 的可见文字全部使用英文，菜单、配置页和棋盘页采用统一的深色科技风格。
+进入井字棋后，先选择棋盘规模，再选择人机或 AI 对战；人机模式可以选择自己执 X 或 O，AI 对战时可以分别指定 X、O 的策略。界面会按尺寸加载 `models/alphazero/*_best.pt`，对局日志统一保存到 `logs/gui/tictactoe/`。GUI 的操作文字全部使用英文，象棋棋子保留中文棋子字样，菜单、配置页和棋盘页采用统一的深色科技风格。
 
 基础版本会运行规则测试，再启动一局多进程对战，默认由启发式 Player X 对随机 Player O。运行结束后会在 `logs/basic/messages.jsonl` 保存消息。
 

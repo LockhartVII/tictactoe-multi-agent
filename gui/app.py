@@ -26,6 +26,7 @@ class BoardGameApp:
         self.screen_state = SCREEN_MENU
         self.ttt_size = 3
         self.ttt_mode = "human_vs_ai"
+        self.ttt_human_side = "X"
         self.x_strategy = "alpha_zero"
         self.o_strategy = "mcts"
         self.other_kind = "gomoku"
@@ -84,16 +85,24 @@ class BoardGameApp:
         for mode, rect in (("human_vs_ai", pygame.Rect(180, 314, 190, 48)), ("ai_vs_ai", pygame.Rect(390, 314, 190, 48))):
             if rect.collidepoint(position):
                 self.ttt_mode = mode
-        if self.ttt_mode == "ai_vs_ai":
-            for strategy, rect in self._strategy_buttons(180, 422):
+        if self.ttt_mode == "human_vs_ai":
+            for side, rect in (("X", pygame.Rect(180, 422, 190, 48)), ("O", pygame.Rect(390, 422, 190, 48))):
+                if rect.collidepoint(position):
+                    self.ttt_human_side = side
+        strategy_y = 510 if self.ttt_mode == "human_vs_ai" else 422
+        if self.ttt_mode == "ai_vs_ai" or self.ttt_human_side == "O":
+            for strategy, rect in self._strategy_buttons(180, strategy_y):
                 if rect.collidepoint(position):
                     self.x_strategy = strategy
-        for strategy, rect in self._strategy_buttons(630, 422):
-            if rect.collidepoint(position):
-                self.o_strategy = strategy
-        if pygame.Rect(180, 646, 400, 56).collidepoint(position):
-            x_strategy = self.x_strategy if self.ttt_mode == "ai_vs_ai" else "human"
-            self.ttt = TicTacToeGame(self.ttt_size, x_strategy, self.o_strategy, self.ttt_mode)
+        if self.ttt_mode == "ai_vs_ai" or self.ttt_human_side == "X":
+            for strategy, rect in self._strategy_buttons(630, strategy_y):
+                if rect.collidepoint(position):
+                    self.o_strategy = strategy
+        start_y = 720 if self.ttt_mode == "human_vs_ai" else 646
+        if pygame.Rect(180, start_y, 400, 56).collidepoint(position):
+            x_strategy = "human" if self.ttt_mode == "human_vs_ai" and self.ttt_human_side == "X" else self.x_strategy
+            o_strategy = "human" if self.ttt_mode == "human_vs_ai" and self.ttt_human_side == "O" else self.o_strategy
+            self.ttt = TicTacToeGame(self.ttt_size, x_strategy, o_strategy, self.ttt_mode)
             self.ttt.start()
             self.screen_state = SCREEN_TTT_GAME
 
@@ -186,17 +195,32 @@ class BoardGameApp:
         text(self.screen, "Game mode", (180, 286), 17, MUTED)
         for mode, rect, label in (("human_vs_ai", pygame.Rect(180, 314, 190, 48), "Human vs AI"), ("ai_vs_ai", pygame.Rect(390, 314, 190, 48), "AI vs AI")):
             button(self.screen, rect, label, mode == self.ttt_mode, rect.collidepoint(mouse), PURPLE)
-        text(self.screen, "X strategy" + (" (Human in Human vs AI mode)" if self.ttt_mode == "human_vs_ai" else ""), (180, 382), 17, MUTED)
-        text(self.screen, "O strategy", (630, 382), 17, MUTED)
-        for strategy, rect in self._strategy_buttons(180, 422):
-            active = self.ttt_mode == "ai_vs_ai" and strategy == self.x_strategy
-            button(self.screen, rect, STRATEGY_LABELS[strategy], active, rect.collidepoint(mouse), CYAN, small=True)
-        for strategy, rect in self._strategy_buttons(630, 422):
-            button(self.screen, rect, STRATEGY_LABELS[strategy], strategy == self.o_strategy, rect.collidepoint(mouse), CYAN, small=True)
+        strategy_y = 510 if self.ttt_mode == "human_vs_ai" else 422
         if self.ttt_mode == "human_vs_ai":
-            panel(self.screen, pygame.Rect(180, 584, 400, 44), (17, 47, 66), CYAN)
-            text(self.screen, f"Human: X   ·   AI: O ({STRATEGY_LABELS[self.o_strategy]})", (205, 598), 16, TEXT, bold=True)
-        self.draw_start_button(mouse, "Start Tic-Tac-Toe")
+            text(self.screen, "Your side", (180, 382), 17, MUTED)
+            for side, rect in (("X", pygame.Rect(180, 422, 190, 48)), ("O", pygame.Rect(390, 422, 190, 48))):
+                button(self.screen, rect, f"Play {side}", side == self.ttt_human_side, rect.collidepoint(mouse), RED if side == "X" else CYAN)
+            x_label = "X strategy (AI)" if self.ttt_human_side == "O" else "X strategy (Human)"
+            o_label = "O strategy (AI)" if self.ttt_human_side == "X" else "O strategy (Human)"
+        else:
+            x_label, o_label = "X strategy", "O strategy"
+        label_y = strategy_y - 16 if self.ttt_mode == "human_vs_ai" else strategy_y - 40
+        text(self.screen, x_label, (180, label_y), 17, MUTED)
+        text(self.screen, o_label, (630, label_y), 17, MUTED)
+        x_enabled = self.ttt_mode == "ai_vs_ai" or self.ttt_human_side == "O"
+        o_enabled = self.ttt_mode == "ai_vs_ai" or self.ttt_human_side == "X"
+        for strategy, rect in self._strategy_buttons(180, strategy_y):
+            active = x_enabled and strategy == self.x_strategy
+            button(self.screen, rect, STRATEGY_LABELS[strategy], active, rect.collidepoint(mouse) and x_enabled, CYAN, small=True, enabled=x_enabled)
+        for strategy, rect in self._strategy_buttons(630, strategy_y):
+            active = o_enabled and strategy == self.o_strategy
+            button(self.screen, rect, STRATEGY_LABELS[strategy], active, rect.collidepoint(mouse) and o_enabled, CYAN, small=True, enabled=o_enabled)
+        if self.ttt_mode == "human_vs_ai":
+            ai_side = "O" if self.ttt_human_side == "X" else "X"
+            ai_strategy = self.o_strategy if ai_side == "O" else self.x_strategy
+            panel(self.screen, pygame.Rect(180, 672, 400, 40), (17, 47, 66), CYAN)
+            text(self.screen, f"Human: {self.ttt_human_side}   ·   AI: {ai_side} ({STRATEGY_LABELS[ai_strategy]})", (205, 684), 15, TEXT, bold=True)
+        self.draw_start_button(mouse, "Start Tic-Tac-Toe", 720 if self.ttt_mode == "human_vs_ai" else 646)
 
     def draw_ttt_game(self, mouse):
         if not self.ttt:
@@ -248,8 +272,8 @@ class BoardGameApp:
         rect = pygame.Rect(48, 112, 120, 44)
         button(self.screen, rect, "‹ Back", False, rect.collidepoint(mouse), MUTED, small=True)
 
-    def draw_start_button(self, mouse, label):
-        rect = pygame.Rect(180, 646, 400, 56)
+    def draw_start_button(self, mouse, label, y=646):
+        rect = pygame.Rect(180, y, 400, 56)
         button(self.screen, rect, label + "  ›", True, rect.collidepoint(mouse), CYAN)
 
     def draw_game_buttons(self, mouse):

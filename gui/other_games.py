@@ -20,7 +20,10 @@ XIANGQI_INIT = [
     ["", "", "", "", "", "", "", "", ""],
     ["R", "H", "E", "A", "K", "A", "E", "H", "R"],
 ]
-XIANGQI_NAMES = {piece: piece.upper() for piece in "rheakcpRHEAKCP"}
+XIANGQI_NAMES = {
+    "r": "车", "h": "马", "e": "象", "a": "士", "k": "将", "c": "炮", "p": "卒",
+    "R": "車", "H": "馬", "E": "相", "A": "仕", "K": "帥", "C": "砲", "P": "兵",
+}
 
 
 def gomoku_winner(board, win_length=5):

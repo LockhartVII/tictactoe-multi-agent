@@ -1,6 +1,7 @@
 """Shared colours, fonts and drawing helpers for the desktop interface."""
 
 from pathlib import Path
+import re
 
 import pygame
 
@@ -22,16 +23,23 @@ GREEN = (82, 232, 164)
 RED = (255, 94, 130)
 YELLOW = (255, 206, 92)
 SHADOW = (3, 7, 16)
-FONT_FILES = (
+LATIN_FONT_FILES = (
+    Path("C:/Windows/Fonts/segoeui.ttf"),
+    Path("C:/Windows/Fonts/arial.ttf"),
+    Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+)
+CJK_FONT_FILES = (
     Path("C:/Windows/Fonts/msyh.ttc"),
     Path("C:/Windows/Fonts/simhei.ttf"),
     Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"),
     Path("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc"),
 )
+_CJK_PATTERN = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]")
 
 
-def make_font(size, bold=False):
-    for path in FONT_FILES:
+def make_font(size, bold=False, cjk=False):
+    font_files = CJK_FONT_FILES if cjk else LATIN_FONT_FILES
+    for path in font_files:
         if path.exists():
             try:
                 font = pygame.font.Font(str(path), size)
@@ -39,7 +47,8 @@ def make_font(size, bold=False):
                 return font
             except (pygame.error, OSError):
                 continue
-    for name in ("Microsoft YaHei", "Segoe UI", "Arial"):
+    names = ("Microsoft YaHei", "SimHei") if cjk else ("Segoe UI", "Arial", "DejaVu Sans")
+    for name in names:
         try:
             return pygame.font.SysFont(name, size, bold=bold)
         except (pygame.error, TypeError, OSError):
@@ -48,7 +57,8 @@ def make_font(size, bold=False):
 
 
 def text(surface, value, position, size=20, color=TEXT, bold=False, anchor="topleft"):
-    image = make_font(size, bold).render(str(value), True, color)
+    value = str(value)
+    image = make_font(size, bold, bool(_CJK_PATTERN.search(value))).render(value, True, color)
     rect = image.get_rect()
     setattr(rect, anchor, position)
     surface.blit(image, rect)
@@ -62,14 +72,18 @@ def panel(surface, rect, colour=PANEL, border=GRID, radius=18):
     pygame.draw.rect(surface, border, rect, width=1, border_radius=radius)
 
 
-def button(surface, rect, label, active=False, hovered=False, accent=CYAN, small=False):
+def button(surface, rect, label, active=False, hovered=False, accent=CYAN, small=False, enabled=True):
     fill = (28, 48, 82) if not active else (24, 86, 116)
-    if hovered:
+    if not enabled:
+        fill = (17, 27, 45)
+    elif hovered:
         fill = (35, 70, 112) if not active else (30, 112, 145)
     pygame.draw.rect(surface, SHADOW, rect.move(0, 4), border_radius=12)
     pygame.draw.rect(surface, fill, rect, border_radius=12)
-    pygame.draw.rect(surface, accent if active else GRID, rect, width=2, border_radius=12)
-    text(surface, label, rect.center, 17 if small else 19, TEXT, bold=active, anchor="center")
+    border = accent if active and enabled else GRID
+    pygame.draw.rect(surface, border, rect, width=2, border_radius=12)
+    text(surface, label, rect.center, 17 if small else 19, TEXT if enabled else MUTED,
+         bold=active and enabled, anchor="center")
 
 
 def divider(surface, x1, y1, x2, y2, colour=GRID):
