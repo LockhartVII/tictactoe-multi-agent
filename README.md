@@ -188,7 +188,7 @@ conda create -n tictactoe-gpu python=3.11 -y
 conda activate tictactoe-gpu
 
 python -m pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
-python -m pip install numpy h5py matplotlib pygame
+python -m pip install -r requirements.txt
 ```
 
 如果希望一步完成 Windows 基础安装，也可以直接运行：
@@ -230,7 +230,7 @@ sudo apt-get install -y python3-venv python3-pip libopenblas-dev
 python3 -m venv .venv --system-site-packages
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install numpy h5py matplotlib pygame
+python -m pip install -r requirements.txt
 ```
 
 也可以使用项目自带脚本完成虚拟环境和通用依赖安装：
