@@ -130,7 +130,11 @@ class BoardGameApp:
             for difficulty, rect in (("low", pygame.Rect(180, 446, 120, 48)), ("mid", pygame.Rect(320, 446, 120, 48)), ("high", pygame.Rect(460, 446, 120, 48))):
                 if rect.collidepoint(position):
                     self.difficulty = difficulty
-            for mode, rect in (("human_vs_ai", pygame.Rect(180, 500, 190, 48)), ("human_vs_human", pygame.Rect(390, 500, 190, 48))):
+            for mode, rect in (("human_vs_ai", pygame.Rect(180, 538, 170, 48)), ("ai_vs_ai", pygame.Rect(370, 538, 170, 48)), ("human_vs_human", pygame.Rect(560, 538, 190, 48))):
+                if rect.collidepoint(position):
+                    self.other_mode = mode
+        else:
+            for mode, rect in (("human_vs_ai", pygame.Rect(180, 490, 170, 48)), ("ai_vs_ai", pygame.Rect(370, 490, 170, 48)), ("human_vs_human", pygame.Rect(560, 490, 190, 48))):
                 if rect.collidepoint(position):
                     self.other_mode = mode
         if pygame.Rect(180, 646, 400, 56).collidepoint(position):
@@ -244,6 +248,8 @@ class BoardGameApp:
             text(self.screen, "AI difficulty", (180, 414), 17, MUTED)
             for difficulty, rect, label in (("low", pygame.Rect(180, 446, 120, 48), "Easy"), ("mid", pygame.Rect(320, 446, 120, 48), "Medium"), ("high", pygame.Rect(460, 446, 120, 48), "Hard")):
                 button(self.screen, rect, label, difficulty == self.difficulty, rect.collidepoint(mouse), PURPLE)
+            text(self.screen, "Game mode", (180, 514), 17, MUTED)
+            mode_y = 538
         else:
             panel(self.screen, pygame.Rect(180, 324, 580, 100), PANEL, PURPLE)
             if self.other_kind == "go":
@@ -252,7 +258,11 @@ class BoardGameApp:
             else:
                 text(self.screen, "Xiangqi supports selection, movement, captures,", (205, 350), 17, TEXT)
                 text(self.screen, "and flying-general checks.", (205, 374), 17, TEXT)
-            text(self.screen, "Mode: two players", (205, 398), 15, MUTED)
+            text(self.screen, "Game mode", (180, 466), 17, MUTED)
+            mode_y = 490
+        for mode, label, x, width in (("human_vs_ai", "Human vs AI", 180, 170), ("ai_vs_ai", "AI vs AI", 370, 170), ("human_vs_human", "Human vs Human", 560, 190)):
+            rect = pygame.Rect(x, mode_y, width, 48)
+            button(self.screen, rect, label, mode == self.other_mode, rect.collidepoint(mouse), PURPLE, small=True)
         self.draw_start_button(mouse, "Start " + ("Gomoku" if self.other_kind == "gomoku" else "Go" if self.other_kind == "go" else "Xiangqi"))
 
     def draw_other_game(self, mouse):
@@ -266,6 +276,7 @@ class BoardGameApp:
             status = "Red to move" if self.other.current_player == 1 else "Black to move"
         text(self.screen, status, (820, 190), 22, YELLOW if self.other.game_over else GREEN)
         text(self.screen, "Click inside the board to play", (820, 280), 16, MUTED)
+        text(self.screen, self.other.engine_status, (820, 320), 15, CYAN if "AI" not in self.other.engine_status else YELLOW)
         self.draw_game_buttons(mouse)
 
     def draw_back_button(self, mouse):

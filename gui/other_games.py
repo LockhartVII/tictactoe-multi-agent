@@ -6,16 +6,17 @@ import random
 import pygame
 
 from .theme import CYAN, GRID_BRIGHT, MUTED, PANEL_2, RED, TEXT, YELLOW, text
+from .engine_adapters import KataGoAdapter, PikafishAdapter, ProtocolError
 
 
 XIANGQI_INIT = [
     ["r", "h", "e", "a", "k", "a", "e", "h", "r"],
     ["", "", "", "", "", "", "", "", ""],
     ["", "c", "", "", "", "", "", "c", ""],
-    ["p", "", "p", "", "", "", "p", "", "p"],
+    ["p", "", "p", "", "p", "", "p", "", "p"],
     ["", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", ""],
-    ["P", "", "P", "", "", "", "P", "", "P"],
+    ["P", "", "P", "", "P", "", "P", "", "P"],
     ["", "C", "", "", "", "", "", "C", ""],
     ["", "", "", "", "", "", "", "", ""],
     ["R", "H", "E", "A", "K", "A", "E", "H", "R"],
@@ -199,12 +200,16 @@ class OtherGamesController:
         self.winner = 0
         self.selected = None
         self.ai_wait_until = 0.0
+        self.go_engine = None
+        self.xiangqi_engine = None
+        self.engine_status = "Built-in rules"
 
     @property
     def title(self):
         return {"gomoku": "Gomoku", "go": "Go", "xiangqi": "Xiangqi"}[self.kind]
 
     def start(self, kind, mode="human_vs_ai", difficulty="mid", size=15):
+        self.close_engines()
         self.kind, self.mode, self.difficulty, self.size = kind, mode, difficulty, size
         self.current_player = 1
         self.game_over = False
@@ -215,6 +220,17 @@ class OtherGamesController:
             self.board = [row.copy() for row in XIANGQI_INIT]
         else:
             self.board = [[0 for _ in range(size)] for _ in range(size)]
+        self.engine_status = "Built-in rules"
+        if mode != "human_vs_human":
+            try:
+                if kind == "go":
+                    self.go_engine = KataGoAdapter(size)
+                    self.engine_status = "KataGo 9x9"
+                elif kind == "xiangqi":
+                    self.xiangqi_engine = PikafishAdapter()
+                    self.engine_status = "Pikafish NNUE"
+            except (FileNotFoundError, OSError, ProtocolError) as error:
+                self.engine_status = "AI unavailable: " + str(error)
 
     def click(self, position, board_rect):
         if self.game_over:
@@ -231,6 +247,11 @@ class OtherGamesController:
             return
         if self.kind == "go":
             if go_play(self.board, row, column, self.current_player):
+                if self.go_engine:
+                    try:
+                        self.go_engine.play(self.current_player, row, column)
+                    except ProtocolError as error:
+                        self.engine_status = "AI error: " + str(error)
                 self.current_player = 2 if self.current_player == 1 else 1
         elif self.current_player == 1 or self.mode == "human_vs_human":
             if self.board[row][column] == 0:
@@ -241,6 +262,8 @@ class OtherGamesController:
                     self.ai_wait_until = 0.0
 
     def _click_xiangqi(self, position, board_rect):
+        if self.mode == "human_vs_ai" and self.current_player != 1:
+            return
         if not board_rect.collidepoint(position):
             return
         margin_x, margin_y = 32, 28
@@ -277,17 +300,72 @@ class OtherGamesController:
         self.game_over = bool(self.winner or self.draw_game)
 
     def tick(self, now):
-        if self.kind != "gomoku" or self.mode != "human_vs_ai" or self.current_player != 2:
+        if self.mode == "human_vs_human" or self.game_over:
             return
-        if self.game_over or now < self.ai_wait_until:
+        if self.mode == "human_vs_ai" and self.current_player != 2:
             return
-        move = gomoku_ai(self.board, 2, self.difficulty)
-        if move is not None:
-            self.board[move[0]][move[1]] = 2
+        if now < self.ai_wait_until:
+            return
+        if self.kind in ("go", "xiangqi") and not (self.go_engine or self.xiangqi_engine):
+            self.engine_status = "AI runtime is not installed"
+            self.game_over = True
+            self.draw_game = True
+            return
+        move = None
+        if self.kind == "gomoku":
+            move = gomoku_ai(self.board, self.current_player, self.difficulty)
+            if move is not None:
+                self.board[move[0]][move[1]] = self.current_player
+        elif self.kind == "go" and self.go_engine:
+            try:
+                move = self.go_engine.genmove(self.current_player)
+                if move is None:
+                    self.game_over = True
+                    self.draw_game = True
+                elif not go_play(self.board, move[0], move[1], self.current_player):
+                    self.engine_status = "AI returned an illegal move"
+                    self.game_over = True
+            except (ProtocolError, ValueError) as error:
+                self.engine_status = "AI error: " + str(error)
+                self.game_over = True
+        elif self.kind == "xiangqi" and self.xiangqi_engine:
+            try:
+                move = self.xiangqi_engine.best_move(self.board, self.current_player)
+                if move is not None:
+                    self._apply_xiangqi_move(move)
+                else:
+                    self.game_over = True
+            except (ProtocolError, ValueError) as error:
+                self.engine_status = "AI error: " + str(error)
+                self.game_over = True
+        if move is not None and not self.game_over and self.kind == "gomoku":
             self._finish_if_needed()
-            if not self.game_over:
-                self.current_player = 1
+        if move is not None and not self.game_over and self.kind != "xiangqi":
+            self.current_player = 2 if self.current_player == 1 else 1
         self.ai_wait_until = now + 0.3
+
+    def _apply_xiangqi_move(self, move):
+        old_row, old_column, row, column = move
+        if (row, column) not in xiangqi_moves(self.board, old_row, old_column):
+            raise ProtocolError("Pikafish returned an illegal move")
+        captured = self.board[row][column]
+        self.board[row][column] = self.board[old_row][old_column]
+        self.board[old_row][old_column] = ""
+        if captured and captured.lower() == "k":
+            self.game_over = True
+            self.winner = self.current_player
+        else:
+            self.current_player = 2 if self.current_player == 1 else 1
+
+    def close_engines(self):
+        for engine in (self.go_engine, self.xiangqi_engine):
+            if engine:
+                engine.close()
+        self.go_engine = None
+        self.xiangqi_engine = None
+
+    def __del__(self):
+        self.close_engines()
 
     def draw(self, surface, board_rect):
         if self.kind == "xiangqi":
@@ -338,12 +416,21 @@ class OtherGamesController:
         cell_x = (board_rect.width - 2 * margin_x) / 8
         cell_y = (board_rect.height - 2 * margin_y) / 9
         colour = (226, 184, 116)
+        left = board_rect.left + margin_x
+        right = board_rect.right - margin_x
+        top = board_rect.top + margin_y
+        bottom = board_rect.bottom - margin_y
+        river_y = top + 4.5 * cell_y
+        river_band = pygame.Rect(round(left + 2), round(top + 4 * cell_y + 3), round(right - left - 4), round(cell_y - 6))
+        pygame.draw.rect(surface, (74, 50, 30), river_band)
         for column in range(9):
-            x = round(board_rect.left + margin_x + column * cell_x)
-            pygame.draw.line(surface, colour, (x, board_rect.top + margin_y), (x, board_rect.bottom - margin_y), 2)
+            x = round(left + column * cell_x)
+            pygame.draw.line(surface, colour, (x, round(top)), (x, round(bottom)), 2)
         for row in range(10):
-            y = round(board_rect.top + margin_y + row * cell_y)
-            pygame.draw.line(surface, colour, (board_rect.left + margin_x, y), (board_rect.right - margin_x, y), 2)
+            y = round(top + row * cell_y)
+            pygame.draw.line(surface, colour, (round(left), y), (round(right), y), 2)
+        text(surface, "楚河", (round(left + 2.4 * cell_x), round(river_y)), 25, (242, 207, 143), bold=True, anchor="center")
+        text(surface, "汉界", (round(left + 6.6 * cell_x), round(river_y)), 25, (242, 207, 143), bold=True, anchor="center")
         for row in range(10):
             for column in range(9):
                 piece = self.board[row][column]

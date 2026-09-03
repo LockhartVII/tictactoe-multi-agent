@@ -10,7 +10,7 @@ import pygame
 from board_environment import available, new_board, terminal, win_length_for
 from minmax import minimax_move
 from strategies import alpha_beta_move
-from multiboard_tournament import choose_move as choose_multiboard_move
+from scripts.multiboard_tournament import choose_move as choose_multiboard_move
 from .theme import CYAN, GREEN, GRID_BRIGHT, MUTED, PANEL_2, RED, TEXT, YELLOW, text
 
 

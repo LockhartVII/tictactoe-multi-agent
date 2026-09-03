@@ -9,3 +9,7 @@ logs/gui/**/*.jsonl
 *.iml
 models/alphazero/*_iter_*.pt
 models/best-25eps-25sim-10epch.pth.tar
+engines/
+models/go/
+engines/katago/runtime/gtp_logs/
+gui_latest_*.png

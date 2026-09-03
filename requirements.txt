@@ -1,0 +1,11 @@
+# Shared runtime dependencies for Windows x86-64, Linux x86-64, and Jetson ARM64.
+# Jetson users should keep the torch supplied by the matching JetPack wheel.
+numpy>=1.26,<3
+h5py>=3.10
+matplotlib>=3.8
+pygame>=2.5
+pillow>=10
+
+# These markers prevent pip from trying to install an x86 wheel on ARM64.
+torch==2.6.0; platform_system == "Windows" and platform_machine == "AMD64"
+torch==2.6.0; platform_system == "Linux" and platform_machine == "x86_64"
