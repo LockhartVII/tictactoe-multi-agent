@@ -1,7 +1,7 @@
 strategy,games,wins,draws,losses,points,first_games,first_points,second_games,second_points,rank
-mcts,10,4,6,0,18,5,9,5,9,1
-minimax,10,3,7,0,16,5,9,5,7,2
-heuristic,10,3,6,1,15,5,9,5,6,3
-alpha_beta,10,2,8,0,14,5,9,5,5,4
-alpha_zero,10,3,2,5,11,5,8,5,3,5
-random,10,0,1,9,1,5,1,5,0,6
+mcts,10,3,7,0,16,5,9,5,7,1
+alpha_beta,10,2,8,0,14,5,7,5,7,2
+alpha_zero,10,2,8,0,14,5,7,5,7,3
+minimax,10,2,8,0,14,5,7,5,7,4
+heuristic,10,2,7,1,13,5,7,5,6,5
+random,10,0,0,10,0,5,0,5,0,6

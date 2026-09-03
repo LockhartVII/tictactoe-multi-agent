@@ -1,0 +1,15 @@
+{"mark": "X", "strategy": "heuristic", "move": 8, "board": [" ", " ", " ", " ", " ", " ", " ", " ", "X", " ", " ", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "mcts", "move": 9, "board": [" ", " ", " ", " ", " ", " ", " ", " ", "X", "O", " ", " ", " ", " ", " ", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 4, "board": [" ", " ", " ", " ", "X", " ", " ", " ", "X", "O", " ", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "mcts", "move": 13, "board": [" ", " ", " ", " ", "X", " ", " ", " ", "X", "O", " ", " ", " ", "O", " ", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 6, "board": [" ", " ", " ", " ", "X", " ", "X", " ", "X", "O", " ", " ", " ", "O", " ", " "]}
+{"mark": "O", "strategy": "mcts", "move": 5, "board": [" ", " ", " ", " ", "X", "O", "X", " ", "X", "O", " ", " ", " ", "O", " ", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 1, "board": [" ", "X", " ", " ", "X", "O", "X", " ", "X", "O", " ", " ", " ", "O", " ", " "]}
+{"mark": "O", "strategy": "mcts", "move": 0, "board": ["O", "X", " ", " ", "X", "O", "X", " ", "X", "O", " ", " ", " ", "O", " ", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 2, "board": ["O", "X", "X", " ", "X", "O", "X", " ", "X", "O", " ", " ", " ", "O", " ", " "]}
+{"mark": "O", "strategy": "mcts", "move": 14, "board": ["O", "X", "X", " ", "X", "O", "X", " ", "X", "O", " ", " ", " ", "O", "O", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 3, "board": ["O", "X", "X", "X", "X", "O", "X", " ", "X", "O", " ", " ", " ", "O", "O", " "]}
+{"mark": "O", "strategy": "mcts", "move": 15, "board": ["O", "X", "X", "X", "X", "O", "X", " ", "X", "O", " ", " ", " ", "O", "O", "O"]}
+{"mark": "X", "strategy": "heuristic", "move": 10, "board": ["O", "X", "X", "X", "X", "O", "X", " ", "X", "O", "X", " ", " ", "O", "O", "O"]}
+{"mark": "O", "strategy": "mcts", "move": 12, "board": ["O", "X", "X", "X", "X", "O", "X", " ", "X", "O", "X", " ", "O", "O", "O", "O"]}
+{"performative": "GAME_OVER", "result": "O"}

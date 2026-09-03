@@ -1,0 +1,26 @@
+{"mark": "X", "strategy": "random", "move": 19, "board": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "heuristic", "move": 12, "board": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "O", " ", " ", " ", " ", " ", " ", "X", " ", " ", " ", " ", " "]}
+{"mark": "X", "strategy": "random", "move": 21, "board": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "O", " ", " ", " ", " ", " ", " ", "X", " ", "X", " ", " ", " "]}
+{"mark": "O", "strategy": "heuristic", "move": 15, "board": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "O", " ", " ", "O", " ", " ", " ", "X", " ", "X", " ", " ", " "]}
+{"mark": "X", "strategy": "random", "move": 24, "board": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "O", " ", " ", "O", " ", " ", " ", "X", " ", "X", " ", " ", "X"]}
+{"mark": "O", "strategy": "heuristic", "move": 2, "board": [" ", " ", "O", " ", " ", " ", " ", " ", " ", " ", " ", " ", "O", " ", " ", "O", " ", " ", " ", "X", " ", "X", " ", " ", "X"]}
+{"mark": "X", "strategy": "random", "move": 9, "board": [" ", " ", "O", " ", " ", " ", " ", " ", " ", "X", " ", " ", "O", " ", " ", "O", " ", " ", " ", "X", " ", "X", " ", " ", "X"]}
+{"mark": "O", "strategy": "heuristic", "move": 11, "board": [" ", " ", "O", " ", " ", " ", " ", " ", " ", "X", " ", "O", "O", " ", " ", "O", " ", " ", " ", "X", " ", "X", " ", " ", "X"]}
+{"mark": "X", "strategy": "random", "move": 4, "board": [" ", " ", "O", " ", "X", " ", " ", " ", " ", "X", " ", "O", "O", " ", " ", "O", " ", " ", " ", "X", " ", "X", " ", " ", "X"]}
+{"mark": "O", "strategy": "heuristic", "move": 14, "board": [" ", " ", "O", " ", "X", " ", " ", " ", " ", "X", " ", "O", "O", " ", "O", "O", " ", " ", " ", "X", " ", "X", " ", " ", "X"]}
+{"mark": "X", "strategy": "random", "move": 23, "board": [" ", " ", "O", " ", "X", " ", " ", " ", " ", "X", " ", "O", "O", " ", "O", "O", " ", " ", " ", "X", " ", "X", " ", "X", "X"]}
+{"mark": "O", "strategy": "heuristic", "move": 17, "board": [" ", " ", "O", " ", "X", " ", " ", " ", " ", "X", " ", "O", "O", " ", "O", "O", " ", "O", " ", "X", " ", "X", " ", "X", "X"]}
+{"mark": "X", "strategy": "random", "move": 10, "board": [" ", " ", "O", " ", "X", " ", " ", " ", " ", "X", "X", "O", "O", " ", "O", "O", " ", "O", " ", "X", " ", "X", " ", "X", "X"]}
+{"mark": "O", "strategy": "heuristic", "move": 3, "board": [" ", " ", "O", "O", "X", " ", " ", " ", " ", "X", "X", "O", "O", " ", "O", "O", " ", "O", " ", "X", " ", "X", " ", "X", "X"]}
+{"mark": "X", "strategy": "random", "move": 18, "board": [" ", " ", "O", "O", "X", " ", " ", " ", " ", "X", "X", "O", "O", " ", "O", "O", " ", "O", "X", "X", " ", "X", " ", "X", "X"]}
+{"mark": "O", "strategy": "heuristic", "move": 5, "board": [" ", " ", "O", "O", "X", "O", " ", " ", " ", "X", "X", "O", "O", " ", "O", "O", " ", "O", "X", "X", " ", "X", " ", "X", "X"]}
+{"mark": "X", "strategy": "random", "move": 7, "board": [" ", " ", "O", "O", "X", "O", " ", "X", " ", "X", "X", "O", "O", " ", "O", "O", " ", "O", "X", "X", " ", "X", " ", "X", "X"]}
+{"mark": "O", "strategy": "heuristic", "move": 8, "board": [" ", " ", "O", "O", "X", "O", " ", "X", "O", "X", "X", "O", "O", " ", "O", "O", " ", "O", "X", "X", " ", "X", " ", "X", "X"]}
+{"mark": "X", "strategy": "random", "move": 16, "board": [" ", " ", "O", "O", "X", "O", " ", "X", "O", "X", "X", "O", "O", " ", "O", "O", "X", "O", "X", "X", " ", "X", " ", "X", "X"]}
+{"mark": "O", "strategy": "heuristic", "move": 22, "board": [" ", " ", "O", "O", "X", "O", " ", "X", "O", "X", "X", "O", "O", " ", "O", "O", "X", "O", "X", "X", " ", "X", "O", "X", "X"]}
+{"mark": "X", "strategy": "random", "move": 0, "board": ["X", " ", "O", "O", "X", "O", " ", "X", "O", "X", "X", "O", "O", " ", "O", "O", "X", "O", "X", "X", " ", "X", "O", "X", "X"]}
+{"mark": "O", "strategy": "heuristic", "move": 13, "board": ["X", " ", "O", "O", "X", "O", " ", "X", "O", "X", "X", "O", "O", "O", "O", "O", "X", "O", "X", "X", " ", "X", "O", "X", "X"]}
+{"mark": "X", "strategy": "random", "move": 1, "board": ["X", "X", "O", "O", "X", "O", " ", "X", "O", "X", "X", "O", "O", "O", "O", "O", "X", "O", "X", "X", " ", "X", "O", "X", "X"]}
+{"mark": "O", "strategy": "heuristic", "move": 20, "board": ["X", "X", "O", "O", "X", "O", " ", "X", "O", "X", "X", "O", "O", "O", "O", "O", "X", "O", "X", "X", "O", "X", "O", "X", "X"]}
+{"mark": "X", "strategy": "random", "move": 6, "board": ["X", "X", "O", "O", "X", "O", "X", "X", "O", "X", "X", "O", "O", "O", "O", "O", "X", "O", "X", "X", "O", "X", "O", "X", "X"]}
+{"performative": "GAME_OVER", "result": "DRAW"}

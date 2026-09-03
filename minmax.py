@@ -108,7 +108,7 @@ def player_agent(
             elif strategy == "mcts":
                 move = mcts_move(board, mark)
 
-            elif strategy in ("alpha_zero", "alphazero"):
+            elif strategy in ("alpha_zero", "alpha_zero_full", "alphazero"):
                 move = alpha_zero_move(board, mark)
 
             elif strategy == "random":
@@ -332,12 +332,12 @@ def main():
     parser.add_argument(
         "--x-strategy",
         default="heuristic",
-        choices=("heuristic", "minimax", "alpha_beta", "mcts", "alpha_zero", "random"),
+        choices=("heuristic", "minimax", "alpha_beta", "mcts", "alpha_zero", "alpha_zero_full", "random"),
     )
     parser.add_argument(
         "--o-strategy",
         default="minimax",
-        choices=("heuristic", "minimax", "alpha_beta", "mcts", "alpha_zero", "random"),
+        choices=("heuristic", "minimax", "alpha_beta", "mcts", "alpha_zero", "alpha_zero_full", "random"),
     )
     parser.add_argument("--games", type=int, default=5)
 

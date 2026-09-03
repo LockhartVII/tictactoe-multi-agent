@@ -124,7 +124,7 @@ def player_agent(
                 move = alpha_beta_move(board, mark)
             elif strategy == "mcts":
                 move = mcts_move(board, mark)
-            elif strategy in ("alpha_zero", "alphazero"):
+            elif strategy in ("alpha_zero", "alpha_zero_full", "alphazero"):
                 move = alpha_zero_move(board, mark)
             else:
                 move = random_move(board)

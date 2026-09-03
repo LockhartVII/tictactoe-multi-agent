@@ -201,12 +201,19 @@ def mcts_move(board, mark, simulations=500, seed=None):
 
 
 def alpha_zero_move(board, mark):
-    """调用可选的AlphaZero模型；模型不可用时退回MCTS。"""
+    """优先使用完整AlphaZero；模型不可用时使用兼容推理或MCTS。"""
+    try:
+        from alphazero_core import full_alphazero_move
+        return full_alphazero_move(board, mark)
+    except FileNotFoundError:
+        pass
+    except Exception:
+        pass
+
     try:
         from alphazero_adapter import model_move
         return model_move(board, mark)
     except Exception:
-        # 预训练权重或TensorFlow不可用时，仍然保持Agent可运行。
         return mcts_move(board, mark, simulations=800)
 
 

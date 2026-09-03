@@ -1,0 +1,12 @@
+{"mark": "X", "strategy": "mcts", "move": 6, "board": [" ", " ", " ", " ", " ", " ", "X", " ", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 3, "board": [" ", " ", " ", "O", " ", " ", "X", " ", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"mark": "X", "strategy": "mcts", "move": 7, "board": [" ", " ", " ", "O", " ", " ", "X", "X", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 2, "board": [" ", " ", "O", "O", " ", " ", "X", "X", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"mark": "X", "strategy": "mcts", "move": 5, "board": [" ", " ", "O", "O", " ", "X", "X", "X", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 4, "board": [" ", " ", "O", "O", "O", "X", "X", "X", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"mark": "X", "strategy": "mcts", "move": 0, "board": ["X", " ", "O", "O", "O", "X", "X", "X", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 1, "board": ["X", "O", "O", "O", "O", "X", "X", "X", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"mark": "X", "strategy": "mcts", "move": 10, "board": ["X", "O", "O", "O", "O", "X", "X", "X", " ", " ", "X", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 8, "board": ["X", "O", "O", "O", "O", "X", "X", "X", "O", " ", "X", " ", " ", " ", " ", " "]}
+{"mark": "X", "strategy": "mcts", "move": 15, "board": ["X", "O", "O", "O", "O", "X", "X", "X", "O", " ", "X", " ", " ", " ", " ", "X"]}
+{"performative": "GAME_OVER", "result": "X"}

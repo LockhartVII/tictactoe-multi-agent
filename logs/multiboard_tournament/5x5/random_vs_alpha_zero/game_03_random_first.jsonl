@@ -1,0 +1,26 @@
+{"mark": "X", "strategy": "random", "move": 22, "board": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 12, "board": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "O", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X", " ", " "]}
+{"mark": "X", "strategy": "random", "move": 21, "board": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "O", " ", " ", " ", " ", " ", " ", " ", " ", "X", "X", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 11, "board": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "O", "O", " ", " ", " ", " ", " ", " ", " ", " ", "X", "X", " ", " "]}
+{"mark": "X", "strategy": "random", "move": 16, "board": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "O", "O", " ", " ", " ", "X", " ", " ", " ", " ", "X", "X", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 6, "board": [" ", " ", " ", " ", " ", " ", "O", " ", " ", " ", " ", "O", "O", " ", " ", " ", "X", " ", " ", " ", " ", "X", "X", " ", " "]}
+{"mark": "X", "strategy": "random", "move": 2, "board": [" ", " ", "X", " ", " ", " ", "O", " ", " ", " ", " ", "O", "O", " ", " ", " ", "X", " ", " ", " ", " ", "X", "X", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 7, "board": [" ", " ", "X", " ", " ", " ", "O", "O", " ", " ", " ", "O", "O", " ", " ", " ", "X", " ", " ", " ", " ", "X", "X", " ", " "]}
+{"mark": "X", "strategy": "random", "move": 5, "board": [" ", " ", "X", " ", " ", "X", "O", "O", " ", " ", " ", "O", "O", " ", " ", " ", "X", " ", " ", " ", " ", "X", "X", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 8, "board": [" ", " ", "X", " ", " ", "X", "O", "O", "O", " ", " ", "O", "O", " ", " ", " ", "X", " ", " ", " ", " ", "X", "X", " ", " "]}
+{"mark": "X", "strategy": "random", "move": 10, "board": [" ", " ", "X", " ", " ", "X", "O", "O", "O", " ", "X", "O", "O", " ", " ", " ", "X", " ", " ", " ", " ", "X", "X", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 13, "board": [" ", " ", "X", " ", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", " ", " ", "X", " ", " ", " ", " ", "X", "X", " ", " "]}
+{"mark": "X", "strategy": "random", "move": 23, "board": [" ", " ", "X", " ", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", " ", " ", "X", " ", " ", " ", " ", "X", "X", "X", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 1, "board": [" ", "O", "X", " ", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", " ", " ", "X", " ", " ", " ", " ", "X", "X", "X", " "]}
+{"mark": "X", "strategy": "random", "move": 0, "board": ["X", "O", "X", " ", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", " ", " ", "X", " ", " ", " ", " ", "X", "X", "X", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 18, "board": ["X", "O", "X", " ", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", " ", " ", "X", " ", "O", " ", " ", "X", "X", "X", " "]}
+{"mark": "X", "strategy": "random", "move": 19, "board": ["X", "O", "X", " ", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", " ", " ", "X", " ", "O", "X", " ", "X", "X", "X", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 24, "board": ["X", "O", "X", " ", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", " ", " ", "X", " ", "O", "X", " ", "X", "X", "X", "O"]}
+{"mark": "X", "strategy": "random", "move": 3, "board": ["X", "O", "X", "X", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", " ", " ", "X", " ", "O", "X", " ", "X", "X", "X", "O"]}
+{"mark": "O", "strategy": "alpha_zero", "move": 15, "board": ["X", "O", "X", "X", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", " ", "O", "X", " ", "O", "X", " ", "X", "X", "X", "O"]}
+{"mark": "X", "strategy": "random", "move": 17, "board": ["X", "O", "X", "X", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", " ", "O", "X", "X", "O", "X", " ", "X", "X", "X", "O"]}
+{"mark": "O", "strategy": "alpha_zero", "move": 20, "board": ["X", "O", "X", "X", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", " ", "O", "X", "X", "O", "X", "O", "X", "X", "X", "O"]}
+{"mark": "X", "strategy": "random", "move": 14, "board": ["X", "O", "X", "X", " ", "X", "O", "O", "O", " ", "X", "O", "O", "O", "X", "O", "X", "X", "O", "X", "O", "X", "X", "X", "O"]}
+{"mark": "O", "strategy": "alpha_zero", "move": 4, "board": ["X", "O", "X", "X", "O", "X", "O", "O", "O", " ", "X", "O", "O", "O", "X", "O", "X", "X", "O", "X", "O", "X", "X", "X", "O"]}
+{"mark": "X", "strategy": "random", "move": 9, "board": ["X", "O", "X", "X", "O", "X", "O", "O", "O", "X", "X", "O", "O", "O", "X", "O", "X", "X", "O", "X", "O", "X", "X", "X", "O"]}
+{"performative": "GAME_OVER", "result": "DRAW"}

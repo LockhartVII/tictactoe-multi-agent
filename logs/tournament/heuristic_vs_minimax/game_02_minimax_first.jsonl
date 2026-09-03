@@ -1,0 +1,23 @@
+{"sender": "supervisor", "receiver": "referee", "performative": "START", "content": {}, "timestamp": 1788404709.019964}
+{"sender": "referee", "receiver": "player_x", "performative": "REQUEST_MOVE", "content": {"board": [" ", " ", " ", " ", " ", " ", " ", " ", " "]}, "timestamp": 1788404709.2057273}
+{"sender": "player_x", "receiver": "referee", "performative": "PROPOSE_MOVE", "content": {"move": 0, "mark": "X"}, "timestamp": 1788404710.5087132}
+{"sender": "referee", "receiver": "player_o", "performative": "REQUEST_MOVE", "content": {"board": ["X", " ", " ", " ", " ", " ", " ", " ", " "]}, "timestamp": 1788404710.5102577}
+{"sender": "player_o", "receiver": "referee", "performative": "PROPOSE_MOVE", "content": {"move": 4, "mark": "O"}, "timestamp": 1788404710.5107882}
+{"sender": "referee", "receiver": "player_x", "performative": "REQUEST_MOVE", "content": {"board": ["X", " ", " ", " ", "O", " ", " ", " ", " "]}, "timestamp": 1788404710.5123398}
+{"sender": "player_x", "receiver": "referee", "performative": "PROPOSE_MOVE", "content": {"move": 1, "mark": "X"}, "timestamp": 1788404710.529366}
+{"sender": "referee", "receiver": "player_o", "performative": "REQUEST_MOVE", "content": {"board": ["X", "X", " ", " ", "O", " ", " ", " ", " "]}, "timestamp": 1788404710.5301397}
+{"sender": "player_o", "receiver": "referee", "performative": "PROPOSE_MOVE", "content": {"move": 2, "mark": "O"}, "timestamp": 1788404710.5301397}
+{"sender": "referee", "receiver": "player_x", "performative": "REQUEST_MOVE", "content": {"board": ["X", "X", "O", " ", "O", " ", " ", " ", " "]}, "timestamp": 1788404710.5306828}
+{"sender": "player_x", "receiver": "referee", "performative": "PROPOSE_MOVE", "content": {"move": 6, "mark": "X"}, "timestamp": 1788404710.5312037}
+{"sender": "referee", "receiver": "player_o", "performative": "REQUEST_MOVE", "content": {"board": ["X", "X", "O", " ", "O", " ", "X", " ", " "]}, "timestamp": 1788404710.531722}
+{"sender": "player_o", "receiver": "referee", "performative": "PROPOSE_MOVE", "content": {"move": 3, "mark": "O"}, "timestamp": 1788404710.531722}
+{"sender": "referee", "receiver": "player_x", "performative": "REQUEST_MOVE", "content": {"board": ["X", "X", "O", "O", "O", " ", "X", " ", " "]}, "timestamp": 1788404710.5323133}
+{"sender": "player_x", "receiver": "referee", "performative": "PROPOSE_MOVE", "content": {"move": 5, "mark": "X"}, "timestamp": 1788404710.5323133}
+{"sender": "referee", "receiver": "player_o", "performative": "REQUEST_MOVE", "content": {"board": ["X", "X", "O", "O", "O", "X", "X", " ", " "]}, "timestamp": 1788404710.5328333}
+{"sender": "player_o", "receiver": "referee", "performative": "PROPOSE_MOVE", "content": {"move": 8, "mark": "O"}, "timestamp": 1788404710.5328333}
+{"sender": "referee", "receiver": "player_x", "performative": "REQUEST_MOVE", "content": {"board": ["X", "X", "O", "O", "O", "X", "X", " ", "O"]}, "timestamp": 1788404710.5333545}
+{"sender": "player_x", "receiver": "referee", "performative": "PROPOSE_MOVE", "content": {"move": 7, "mark": "X"}, "timestamp": 1788404710.5333545}
+{"sender": "referee", "receiver": "player_x", "performative": "GAME_OVER", "content": {"result": "DRAW", "board": ["X", "X", "O", "O", "O", "X", "X", "X", "O"]}, "timestamp": 1788404710.5338748}
+{"sender": "referee", "receiver": "player_o", "performative": "GAME_OVER", "content": {"result": "DRAW", "board": ["X", "X", "O", "O", "O", "X", "X", "X", "O"]}, "timestamp": 1788404710.5338748}
+{"sender": "referee", "receiver": "supervisor", "performative": "GAME_OVER", "content": {"result": "DRAW", "board": ["X", "X", "O", "O", "O", "X", "X", "X", "O"]}, "timestamp": 1788404710.5338748}
+{"sender": "supervisor", "receiver": "logger", "performative": "SHUTDOWN", "content": {}, "timestamp": 1788404710.5344055}

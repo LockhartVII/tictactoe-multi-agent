@@ -1,0 +1,17 @@
+{"mark": "X", "strategy": "heuristic", "move": 8, "board": [" ", " ", " ", " ", " ", " ", " ", " ", "X", " ", " ", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 9, "board": [" ", " ", " ", " ", " ", " ", " ", " ", "X", "O", " ", " ", " ", " ", " ", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 3, "board": [" ", " ", " ", "X", " ", " ", " ", " ", "X", "O", " ", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 5, "board": [" ", " ", " ", "X", " ", "O", " ", " ", "X", "O", " ", " ", " ", " ", " ", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 14, "board": [" ", " ", " ", "X", " ", "O", " ", " ", "X", "O", " ", " ", " ", " ", "X", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 13, "board": [" ", " ", " ", "X", " ", "O", " ", " ", "X", "O", " ", " ", " ", "O", "X", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 1, "board": [" ", "X", " ", "X", " ", "O", " ", " ", "X", "O", " ", " ", " ", "O", "X", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 4, "board": [" ", "X", " ", "X", "O", "O", " ", " ", "X", "O", " ", " ", " ", "O", "X", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 12, "board": [" ", "X", " ", "X", "O", "O", " ", " ", "X", "O", " ", " ", "X", "O", "X", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 6, "board": [" ", "X", " ", "X", "O", "O", "O", " ", "X", "O", " ", " ", "X", "O", "X", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 7, "board": [" ", "X", " ", "X", "O", "O", "O", "X", "X", "O", " ", " ", "X", "O", "X", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 2, "board": [" ", "X", "O", "X", "O", "O", "O", "X", "X", "O", " ", " ", "X", "O", "X", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 10, "board": [" ", "X", "O", "X", "O", "O", "O", "X", "X", "O", "X", " ", "X", "O", "X", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 11, "board": [" ", "X", "O", "X", "O", "O", "O", "X", "X", "O", "X", "O", "X", "O", "X", " "]}
+{"mark": "X", "strategy": "heuristic", "move": 0, "board": ["X", "X", "O", "X", "O", "O", "O", "X", "X", "O", "X", "O", "X", "O", "X", " "]}
+{"mark": "O", "strategy": "alpha_zero", "move": 15, "board": ["X", "X", "O", "X", "O", "O", "O", "X", "X", "O", "X", "O", "X", "O", "X", "O"]}
+{"performative": "GAME_OVER", "result": "DRAW"}

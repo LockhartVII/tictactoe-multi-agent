@@ -1,0 +1,14 @@
+{"phase": "after_training", "training_games": 139, "mark": "X", "strategy": "alpha_zero", "move": 6, "board": [" ", " ", " ", " ", " ", " ", "X", " ", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "O", "strategy": "mcts", "move": 0, "board": ["O", " ", " ", " ", " ", " ", "X", " ", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "X", "strategy": "alpha_zero", "move": 5, "board": ["O", " ", " ", " ", " ", "X", "X", " ", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "O", "strategy": "mcts", "move": 2, "board": ["O", " ", "O", " ", " ", "X", "X", " ", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "X", "strategy": "alpha_zero", "move": 7, "board": ["O", " ", "O", " ", " ", "X", "X", "X", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "O", "strategy": "mcts", "move": 4, "board": ["O", " ", "O", " ", "O", "X", "X", "X", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "X", "strategy": "alpha_zero", "move": 1, "board": ["O", "X", "O", " ", "O", "X", "X", "X", " ", " ", " ", " ", " ", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "O", "strategy": "mcts", "move": 8, "board": ["O", "X", "O", " ", "O", "X", "X", "X", "O", " ", " ", " ", " ", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "X", "strategy": "alpha_zero", "move": 12, "board": ["O", "X", "O", " ", "O", "X", "X", "X", "O", " ", " ", " ", "X", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "O", "strategy": "mcts", "move": 11, "board": ["O", "X", "O", " ", "O", "X", "X", "X", "O", " ", " ", "O", "X", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "X", "strategy": "alpha_zero", "move": 9, "board": ["O", "X", "O", " ", "O", "X", "X", "X", "O", "X", " ", "O", "X", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "O", "strategy": "mcts", "move": 3, "board": ["O", "X", "O", "O", "O", "X", "X", "X", "O", "X", " ", "O", "X", " ", " ", " "]}
+{"phase": "after_training", "training_games": 139, "mark": "X", "strategy": "alpha_zero", "move": 13, "board": ["O", "X", "O", "O", "O", "X", "X", "X", "O", "X", " ", "O", "X", "X", " ", " "]}
+{"performative": "GAME_OVER", "result": "X", "phase": "after_training", "training_games": 139, "seed": 2216, "mcts_simulations": 1}

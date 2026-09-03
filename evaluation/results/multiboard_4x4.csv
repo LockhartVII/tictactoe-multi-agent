@@ -1,0 +1,5 @@
+strategy,games,wins,draws,losses,points,first_games,first_points,second_games,second_points,rank
+alpha_zero,12,3,9,0,18,6,10,6,8,1
+heuristic,4,0,4,0,4,2,2,2,2,2
+mcts,4,0,4,0,4,2,2,2,2,3
+random,4,0,1,3,1,2,1,2,0,4

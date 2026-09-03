@@ -1,0 +1,8 @@
+{
+  "size": 9,
+  "selection": "training_loss_minimum",
+  "iteration": 30,
+  "loss": 3.8621789361647707,
+  "selected_checkpoint": "C:\\Users\\Ywt\\Desktop\\tictactoe\\models\\alphazero\\alphazero_9x9.pt",
+  "source_checkpoint": "C:\\Users\\Ywt\\Desktop\\tictactoe\\models\\alphazero\\alphazero_9x9_iter_030.pt"
+}

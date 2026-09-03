@@ -1,0 +1,8 @@
+{"mark": "X", "strategy": "alpha_zero", "move": 10, "board": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "random", "move": 4, "board": [" ", " ", " ", " ", "O", " ", " ", " ", " ", " ", "X", " ", " ", " ", " ", " "]}
+{"mark": "X", "strategy": "alpha_zero", "move": 9, "board": [" ", " ", " ", " ", "O", " ", " ", " ", " ", "X", "X", " ", " ", " ", " ", " "]}
+{"mark": "O", "strategy": "random", "move": 13, "board": [" ", " ", " ", " ", "O", " ", " ", " ", " ", "X", "X", " ", " ", "O", " ", " "]}
+{"mark": "X", "strategy": "alpha_zero", "move": 8, "board": [" ", " ", " ", " ", "O", " ", " ", " ", "X", "X", "X", " ", " ", "O", " ", " "]}
+{"mark": "O", "strategy": "random", "move": 15, "board": [" ", " ", " ", " ", "O", " ", " ", " ", "X", "X", "X", " ", " ", "O", " ", "O"]}
+{"mark": "X", "strategy": "alpha_zero", "move": 11, "board": [" ", " ", " ", " ", "O", " ", " ", " ", "X", "X", "X", "X", " ", "O", " ", "O"]}
+{"performative": "GAME_OVER", "result": "X"}
