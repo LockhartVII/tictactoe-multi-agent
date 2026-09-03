@@ -44,6 +44,12 @@ tictactoe/
 ├── make_progression_showcase.py # 生成早中晚阶段的示例对局日志
 ├── make_alphazero_gif.py       # 用 Python 逐帧绘制蜡笔风格 GIF
 ├── make_model_summary.py        # 绘制训练和 tournament 汇总图
+├── upgrade.py                   # Pygame 图形界面启动入口
+├── gui/                         # 图形界面模块
+│   ├── app.py                   # 页面切换、配置页和游戏页
+│   ├── theme.py                 # 配色、字体和通用控件
+│   ├── tictactoe.py             # 井字棋界面和策略调用
+│   └── other_games.py           # 五子棋、围棋、中国象棋
 └── models/
     └── alphazero/                # 各尺寸最佳模型
         ├── alphazero_3x3_best.pt
@@ -156,7 +162,7 @@ Supervisor 负责转发消息，Referee 负责棋盘和规则，Player 负责选
 
 ## Windows x86-64 安装
 
-下面的环境适合 Windows 10/11 和 NVIDIA GPU。当前开发机使用 RTX 4060 Laptop GPU，Python 3.11，PyTorch 2.6.0 CUDA 12.4。项目的规则判断、Minimax、Alpha-Beta 和 MCTS 只依赖 Python 标准库；要运行 AlphaZero 模型和训练流程，再安装 PyTorch、NumPy、h5py 和 matplotlib。
+下面的环境适合 Windows 10/11 和 NVIDIA GPU。当前开发机使用 RTX 4060 Laptop GPU，Python 3.11，PyTorch 2.6.0 CUDA 12.4。项目的基础规则和经典策略只依赖 Python 标准库；要运行 AlphaZero、训练流程和 Pygame 界面，再安装 PyTorch、NumPy、h5py、matplotlib 和 pygame。
 
 先确认 Anaconda 或 Miniconda 已经可以在 PowerShell 中使用：
 
@@ -172,7 +178,7 @@ conda create -n tictactoe-gpu python=3.11 -y
 conda activate tictactoe-gpu
 
 python -m pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
-python -m pip install numpy h5py matplotlib
+python -m pip install numpy h5py matplotlib pygame
 ```
 
 验证 CUDA 是否真的可用：
@@ -208,7 +214,7 @@ sudo apt-get install -y python3-venv python3-pip libopenblas-dev
 python3 -m venv .venv --system-site-packages
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install numpy h5py matplotlib
+python -m pip install numpy h5py matplotlib pygame
 ```
 
 接着安装与本机 JetPack 对应的 ARM64 PyTorch。下面是命令格式，`TORCH_INSTALL` 请替换成 NVIDIA 页面上与你的 JetPack 和 Python 版本完全匹配的 wheel 地址：
@@ -242,6 +248,14 @@ python -c "import torch; print(torch.__version__); print('CUDA:', torch.cuda.is_
 ```bash
 python main.py
 ```
+
+启动新的图形界面：
+
+```bash
+python upgrade.py
+```
+
+进入井字棋后，先选择棋盘规模，再选择人机或 AI 对战；AI 对战时可以分别指定 X、O 的策略。界面会按尺寸加载 `models/alphazero/*_best.pt`，对局日志统一保存到 `logs/gui/tictactoe/`。GUI 的可见文字全部使用英文，菜单、配置页和棋盘页采用统一的深色科技风格。
 
 基础版本会运行规则测试，再启动一局多进程对战，默认由启发式 Player X 对随机 Player O。运行结束后会在 `logs/basic/messages.jsonl` 保存消息。
 
