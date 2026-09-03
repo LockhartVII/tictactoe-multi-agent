@@ -1,7 +1,7 @@
 # Multi-Agent Tic-Tac-Toe
 
-这是一个用 Python 写的小型多智能体井字棋项目。棋盘只有 3×3，却足够把多进程通信、角色分工、策略替换、日志记录和边缘设备部署串起来。每个 Agent 都有自己的进程和收件箱，裁判掌握唯一的正式棋盘，消息总线负责传递消息，Logger 负责留下整局过程。
-项目目前支持基础启发式、随机、Minimax、Alpha-Beta、MCTS，以及完整的 AlphaZero 自我对弈训练和推理流程。模型使用 policy/value 网络配合神经 MCTS 选择动作，落子前会过滤已占用位置，并处理一步之内的必胜和必防局面。如果模型文件缺失，3×3 仍可运行兼容推理或 MCTS，其他尺寸会明确提示需要先训练对应模型。
+这是一个用 Python 写的多智能体井字棋项目，覆盖 3×3、4×4、5×5 和 9×9 四种棋盘规模。项目把多进程通信、角色分工、策略替换、日志记录和边缘设备部署放在同一个可以运行的实验里：每个 Agent 都有自己的进程和收件箱，裁判掌握正式棋盘，消息总线负责传递动作，Logger 负责留下整局过程。
+项目同时支持随机、启发式、Minimax、Alpha-Beta、MCTS，以及完整的 AlphaZero 自我对弈训练和推理流程。AlphaZero 使用 policy/value 网络配合神经 MCTS 选择动作，落子前会过滤已占用位置，并处理一步之内的必胜和必防局面。仓库已经附带各尺寸训练得到的正式 checkpoint；如果某个模型文件缺失，程序会按当前入口回退到兼容推理或 MCTS。
 
 <p align="center">
   <img src="evaluation/figures/alphazero_4x4_early.gif" alt="AlphaZero early training" width="32%" />
@@ -28,10 +28,13 @@ tictactoe/
 ├── select_alphazero.py         # 按训练 loss 挑选最佳 checkpoint
 ├── make_progression_showcase.py # 生成早中晚阶段的示例对局日志
 ├── make_alphazero_gif.py       # 用 Python 逐帧绘制蜡笔风格 GIF
-├── make_model_summary.py        # 绘制最佳模型和 tournament 汇总图
+├── make_model_summary.py        # 绘制训练和 tournament 汇总图
 └── models/
-    ├── best-25eps-25sim-10epch.pth.tar
-    └── alphazero/                # 各尺寸正式 checkpoint 和候选 checkpoint
+    └── alphazero/                # 各尺寸最佳模型
+        ├── alphazero_3x3_best.pt
+        ├── alphazero_4x4_best.pt
+        ├── alphazero_5x5_best.pt
+        └── alphazero_9x9_best.pt
 ```
 
 一局游戏由四类进程组成：`Referee`、`Player X`、`Player O` 和 `Logger`。Player 只根据收到的棋盘副本提出动作，Referee 检查动作是否合法、更新正式棋盘并决定游戏是否结束。所有消息经过统一的字典结构传递，日志使用 JSON Lines 格式保存，方便后续统计非法动作、动作数量、胜负和通信顺序。
@@ -47,7 +50,7 @@ tictactoe/
 | `mcts` | `strategies.py` | 使用 UCT 进行随机模拟和树搜索 | 观察搜索预算对决策的影响 |
 | `alpha_zero` | `alphazero_core.py` | 使用 policy/value 网络引导神经 MCTS，并优先处理一步必胜或必防 | 比较自我对弈模型和经典搜索策略 |
 
-`alpha_zero` 在对应尺寸的训练 checkpoint 存在时，会使用 policy/value 网络引导 MCTS，再由搜索结果决定动作。没有训练 checkpoint 时，3×3 会使用兼容的模型推理或普通 MCTS，其他尺寸会提示缺少对应模型。训练入口会自己生成棋盘状态、搜索分布和最终胜负标签，不需要另外准备动作数据集。
+`alpha_zero` 会根据棋盘尺寸加载对应的 checkpoint，使用 policy/value 网络引导 MCTS，再由搜索结果决定动作。训练入口会自己生成棋盘状态、搜索分布和最终胜负标签，不需要另外准备动作数据集；模型文件暂时不可用时，策略入口会回退到兼容推理或普通 MCTS。
 
 ## 完整 AlphaZero 训练
 
@@ -62,13 +65,13 @@ python alphazero_train.py --size 5 --iterations 10 --games-per-iteration 12 --si
 python alphazero_train.py --size 9 --iterations 5 --games-per-iteration 4 --simulations 20 --epochs 5
 ```
 
-如果要在已有 9×9 模型上继续做完整实验，可以把外层 iteration、self-play 对局和网络更新 epoch 一起提高。下面的命令会接着读取 `models/alphazero/alphazero_9x9.pt` 和 `data/self_play/9x9/`，训练日志会持续追加：
+如果要在已有 9×9 模型上继续做完整实验，可以把外层 iteration、self-play 对局和网络更新 epoch 一起提高。下面的命令会接着读取 `models/alphazero/alphazero_9x9_best.pt` 和 `data/self_play/9x9/`，训练日志会持续追加：
 
 ```bash
 python alphazero_train.py --size 9 --iterations 30 --games-per-iteration 2 --simulations 10 --epochs 20 --resume
 ```
 
-训练产物的目录约定如下：`models/alphazero/` 保存模型，`data/self_play/` 保存压缩回放池，`logs/alphazero/training_<size>x<size>.jsonl` 保存每轮 loss、样本量和 self-play 统计，`logs/alphazero/self_play/<size>x<size>/` 保存每盘逐步盘面、动作和 policy，后者可以直接拿来制作训练动画。
+训练产物的目录约定如下：`models/alphazero/` 保存最终选出的最佳模型，`data/self_play/` 保存压缩回放池，`logs/alphazero/training_<size>x<size>.jsonl` 保存每轮 loss、样本量和 self-play 统计，`logs/alphazero/self_play/<size>x<size>/` 保存每盘逐步盘面、动作和 policy，后者可以直接拿来制作训练动画。训练期间产生的候选 checkpoint 可以留在本地，仓库只提交最终模型。
 
 训练结束后，可以从训练日志里挑出 loss 最低的一轮，选中的文件会复制为正式 checkpoint；完整 tournament 只对这一个 checkpoint 运行，避免每轮都重复比赛：
 
@@ -93,22 +96,29 @@ python multiboard_tournament.py --size 9 --focus-alpha-zero --alpha-simulations 
 
 `--focus-alpha-zero` 只跑 AlphaZero 对 `random`、`heuristic` 和 `mcts` 的定向对局，适合 9×9 这类搜索成本较高的尺寸；`--alpha-simulations` 和 `--baseline-simulations` 可以分别控制双方的搜索预算。3×3 的完美 Minimax 理论上不会输，AlphaZero 在这个尺寸的合理验收标准是保持不败；4×4、5×5 和 9×9 再观察实际胜负与结束步数。
 
-当前保留的最佳模型和最近一次 tournament 摘要如下。训练盘数按 `training_<size>x<size>.jsonl` 中已经记录的 self-play 盘数统计，模型选择先取训练 loss 最低的一轮，再单独进行 tournament；表中的分数来自各尺寸对应的 CSV/JSON 结果文件。
+## 各尺寸策略对战结果
 
-| 棋盘 | 训练 self-play 盘数 | 最佳 iteration | 最低 loss | AlphaZero tournament 分数 | 排名 |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| 3×3 | 112 | 12 | 1.576 | 14 | 3 |
-| 4×4 | 139 | 16 | 1.886 | 18 | 1 |
-| 5×5 | 319 | 30 | 2.482 | 18 | 1 |
-| 9×9 | 237 | 30 | 3.862 | 16 | 1 |
+下面四张图分别对应 3×3、4×4、5×5 和 9×9 的策略对战。3×3 的 `alpha_zero` 使用项目里自己训练的 `models/alphazero/alphazero_3x3_best.pt`，其余尺寸使用各自筛选出的最佳 checkpoint。每张图都同时保留胜负统计，以及先手和后手的得分对比。
 
-![最佳 AlphaZero 模型汇总](evaluation/figures/alphazero_best_models.png)
+<table>
+  <tr>
+    <td><img src="evaluation/figures/strategy_tournament.png" alt="3x3 strategy tournament" width="100%" /></td>
+    <td><img src="evaluation/figures/multiboard_4x4.png" alt="4x4 strategy tournament" width="100%" /></td>
+  </tr>
+  <tr>
+    <td><img src="evaluation/figures/multiboard_5x5.png" alt="5x5 strategy tournament" width="100%" /></td>
+    <td><img src="evaluation/figures/multiboard_9x9.png" alt="9x9 strategy tournament" width="100%" /></td>
+  </tr>
+</table>
 
-重新绘制汇总图：
+当前保留的最佳模型和最近一次 tournament 摘要如下。训练盘数按 `training_<size>x<size>.jsonl` 中已经记录的 self-play 盘数统计，模型选择先取训练 loss 最低的一轮，再单独进行 tournament；表中的分数来自各尺寸对应的 CSV/JSON 结果文件，最后一列可以直接打开对应的最佳 `.pt` 文件。
 
-```bash
-python make_model_summary.py
-```
+| 棋盘 | 训练 self-play 盘数 | 最佳 iteration | 最低 loss | AlphaZero tournament 分数 | 排名 | 最佳模型 |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 3×3 | 112 | 12 | 1.576 | 14 | 2 | [alphazero_3x3_best.pt](models/alphazero/alphazero_3x3_best.pt) |
+| 4×4 | 139 | 16 | 1.886 | 18 | 1 | [alphazero_4x4_best.pt](models/alphazero/alphazero_4x4_best.pt) |
+| 5×5 | 319 | 30 | 2.482 | 18 | 1 | [alphazero_5x5_best.pt](models/alphazero/alphazero_5x5_best.pt) |
+| 9×9 | 237 | 30 | 3.862 | 16 | 1 | [alphazero_9x9_best.pt](models/alphazero/alphazero_9x9_best.pt) |
 
 ## 4×4 训练过程 GIF
 
@@ -261,19 +271,17 @@ python tournament.py
 
 锦标赛包含 `random`、`heuristic`、`minimax`、`alpha_beta`、`mcts` 和 `alpha_zero` 六种策略。每一对策略进行两局 3×3 对局，双方各先手一次。胜局记 3 分，和棋记 1 分，负局记 0 分，最后按照总分、胜局数和策略名排序。结果会写入 `evaluation/results/strategy_tournament.csv` 和 `evaluation/results/strategy_tournament.json`，图表位于 `evaluation/figures/strategy_tournament.png`，每一局的 JSONL 日志按对局放在 `logs/tournament/<strategy>_vs_<strategy>/` 中。
 
-本次完整测试的结果如下，图中左侧是胜平负，右侧是先手和后手的得分：
+本次完整测试的结果如下，图中左侧是胜平负，右侧是先手和后手的得分。3×3 的 `alpha_zero` 使用项目内训练的 `models/alphazero/alphazero_3x3_best.pt`，对应图表已经放在上面的四图区域：
 
-![3×3 策略锦标赛结果](evaluation/figures/strategy_tournament.png)
-
-这次 30 局样本中，`mcts` 以 18 分排名第一。详细数据保存在项目内的 CSV 和 JSON 文件中，重新运行锦标赛后会按新结果更新。
+这次 30 局样本中，`alpha_zero` 取得 14 分，保持 0 负；由于多个策略同分，排名按胜局数和策略名继续排序。详细数据保存在项目内的 CSV 和 JSON 文件中，重新运行锦标赛后会按新结果更新。
 
 | 排名 | 策略 | 总分 | 胜 | 和 | 负 | 先手分 | 后手分 |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1 | `mcts` | 18 | 4 | 6 | 0 | 9 | 9 |
-| 2 | `minimax` | 16 | 3 | 7 | 0 | 9 | 7 |
-| 3 | `heuristic` | 15 | 3 | 6 | 1 | 9 | 6 |
-| 4 | `alpha_beta` | 14 | 2 | 8 | 0 | 9 | 5 |
-| 5 | `alpha_zero` | 11 | 3 | 2 | 5 | 8 | 3 |
+| 1 | `alpha_beta` | 14 | 2 | 8 | 0 | 7 | 7 |
+| 2 | `alpha_zero` | 14 | 2 | 8 | 0 | 7 | 7 |
+| 3 | `heuristic` | 14 | 2 | 8 | 0 | 7 | 7 |
+| 4 | `mcts` | 14 | 2 | 8 | 0 | 7 | 7 |
+| 5 | `minimax` | 12 | 1 | 9 | 0 | 7 | 5 |
 | 6 | `random` | 1 | 0 | 1 | 9 | 1 | 0 |
 
 如果只想快速比较几种策略，可以指定参赛者：
@@ -306,11 +314,11 @@ python tournament.py --strategies heuristic minimax alpha_beta mcts
 
 Logger 会把消息逐行写入 JSONL 文件，每一行对应一条通信消息。基础运行日志位于 `logs/basic/`，Minimax 对战日志位于 `logs/minmax/`，策略锦标赛日志位于 `logs/tournament/`。测试重点包括立即获胜、阻止对手获胜、避免必输、动作合法性、游戏结束通知和 Logger 是否收到完整记录。统计文件和图片分别归档在 `evaluation/results/` 与 `evaluation/figures/`，项目根目录不会直接堆放运行产物。
 
-仓库保留了各尺寸可直接运行的 checkpoint 和训练过程中产生的候选 checkpoint。程序启动时会按棋盘尺寸从项目目录加载，继续训练时使用 `--resume` 即可。
+仓库只保留各尺寸可直接运行的最佳 checkpoint。程序启动时会按棋盘尺寸从项目目录加载，继续训练时使用 `--resume` 即可；候选 checkpoint 只作为本地训练过程中的临时文件。
 
 ## 致谢与许可
 
-AlphaZero 模块使用的网络结构、权重文件及相关适配遵循 [AlphaZero General](https://github.com/suragnair/alpha-zero-general) 项目的 MIT License。该说明用于保留模型和代码的许可信息。
+AlphaZero 的训练思路和部分网络设计参考了 [AlphaZero General](https://github.com/suragnair/alpha-zero-general)，相关参考代码遵循该项目的 MIT License。本仓库中的 checkpoint 由项目自己的 self-play 流程训练生成，代码和实验记录随仓库一起提供。
 
 ## 后续可以怎么玩
 

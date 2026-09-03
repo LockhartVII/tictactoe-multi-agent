@@ -150,7 +150,7 @@ def main():
     )
 
     middle_checkpoint = (
-        PROJECT_ROOT / "models" / "alphazero" / "alphazero_4x4_iter_012.pt"
+        PROJECT_ROOT / "models" / "alphazero" / "alphazero_4x4_best.pt"
     )
     middle_model, middle_device, _ = load_model(middle_checkpoint, device=device)
     middle_games = training_games_at(12)

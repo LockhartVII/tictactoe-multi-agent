@@ -6,3 +6,5 @@ messages*.jsonl
 .playwright-cli/
 .venv/
 *.iml
+models/alphazero/*_iter_*.pt
+models/best-25eps-25sim-10epch.pth.tar

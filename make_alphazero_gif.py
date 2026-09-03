@@ -149,7 +149,7 @@ def make_background(args):
     draw.text((42, 24), "AlphaZero 4x4 showcase", fill="#202020", font=title_font)
     draw.text(
         (44, 70),
-        "Model: alphazero_4x4.pt   Board: 4x4   Win: 4",
+        "Model: alphazero_4x4_best.pt   Board: 4x4   Win: 4",
         fill="#555555",
         font=info_font,
     )

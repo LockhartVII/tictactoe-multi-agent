@@ -1,9 +1,8 @@
-"""Optional inference adapter for the pretrained AlphaZero General model.
+"""Optional compatibility adapter for a legacy 3x3 Keras/HDF5 checkpoint.
 
-The downloaded checkpoint is the Keras/HDF5 checkpoint published by the
-MIT-licensed AlphaZero General project.  We load its weights into an equivalent
-PyTorch network so the project can use the RTX 4060 CUDA environment without
-requiring TensorFlow.
+The main path now uses the project's own PyTorch checkpoint. This adapter stays
+available for users who already have a compatible legacy HDF5 file and do not
+want to install TensorFlow.
 """
 
 from pathlib import Path
@@ -23,7 +22,7 @@ def _find_model_path():
     for path in candidates:
         if path.exists():
             return path
-    raise FileNotFoundError("没有找到AlphaZero Tic-Tac-Toe预训练权重")
+    raise FileNotFoundError("没有找到可选的3x3兼容模型")
 
 
 def _read_weight(h5_file, layer_name, suffix):
@@ -124,7 +123,7 @@ def _build_model():
 
 
 def model_move(board, mark):
-    """编码棋盘，调用预训练模型，并返回概率最高的合法动作。"""
+    """编码棋盘，调用兼容模型，并返回概率最高的合法动作。"""
     global _model, _device
     import torch
 

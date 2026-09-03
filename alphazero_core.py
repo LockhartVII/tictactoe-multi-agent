@@ -88,7 +88,7 @@ class AlphaZeroNet(nn.Module):
 
 
 def checkpoint_path(size):
-    return PROJECT_ROOT / "models" / "alphazero" / f"alphazero_{size}x{size}.pt"
+    return PROJECT_ROOT / "models" / "alphazero" / f"alphazero_{size}x{size}_best.pt"
 
 
 def load_model(checkpoint, device=None):

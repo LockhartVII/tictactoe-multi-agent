@@ -231,7 +231,10 @@ def train(args):
         model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay
     )
     checkpoint = Path(args.checkpoint) if args.checkpoint else (
-        PROJECT_ROOT / "models" / "alphazero" / f"alphazero_{args.size}x{args.size}.pt"
+        PROJECT_ROOT
+        / "models"
+        / "alphazero"
+        / f"alphazero_{args.size}x{args.size}_best.pt"
     )
     start_iteration = 1
     if args.resume and checkpoint.exists():

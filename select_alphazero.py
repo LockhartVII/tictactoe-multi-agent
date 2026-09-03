@@ -14,7 +14,7 @@ def main():
     args = parser.parse_args()
 
     model_dir = PROJECT_ROOT / "models" / "alphazero"
-    final_checkpoint = model_dir / f"alphazero_{args.size}x{args.size}.pt"
+    final_checkpoint = model_dir / f"alphazero_{args.size}x{args.size}_best.pt"
     training_log = PROJECT_ROOT / "logs" / "alphazero" / f"training_{args.size}x{args.size}.jsonl"
     records = []
     if training_log.exists():
@@ -23,13 +23,17 @@ def main():
                 record = json.loads(line)
                 candidate_text = record.get("candidate_checkpoint")
                 candidate = Path(candidate_text) if candidate_text else None
+                if candidate is not None and not candidate.is_absolute():
+                    candidate = PROJECT_ROOT / candidate
                 if candidate is not None and candidate.exists() and "loss" in record:
                     records.append(record)
     if records:
         selected_record = min(records, key=lambda record: record["loss"])
         selected = Path(selected_record["candidate_checkpoint"])
     else:
-        candidates = sorted(model_dir.glob(f"alphazero_{args.size}x{args.size}_iter_*.pt"))
+        candidates = sorted(
+            model_dir.glob(f"alphazero_{args.size}x{args.size}_best_iter_*.pt")
+        )
         if not candidates:
             raise FileNotFoundError(f"没有找到{args.size}x{args.size}的checkpoint")
         selected_record = {"iteration": None, "loss": None}
@@ -45,8 +49,8 @@ def main():
                 "selection": "training_loss_minimum",
                 "iteration": selected_record["iteration"],
                 "loss": selected_record["loss"],
-                "selected_checkpoint": str(final_checkpoint),
-                "source_checkpoint": str(selected),
+                "selected_checkpoint": final_checkpoint.relative_to(PROJECT_ROOT).as_posix(),
+                "source_checkpoint": selected.relative_to(PROJECT_ROOT).as_posix(),
             },
             file,
             ensure_ascii=False,

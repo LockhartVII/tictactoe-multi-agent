@@ -3,6 +3,6 @@
   "selection": "training_loss_minimum",
   "iteration": 16,
   "loss": 1.886322144085799,
-  "selected_checkpoint": "C:\\Users\\Ywt\\Desktop\\tictactoe\\models\\alphazero\\alphazero_4x4.pt",
-  "source_checkpoint": "C:\\Users\\Ywt\\Desktop\\tictactoe\\models\\alphazero\\alphazero_4x4_iter_016.pt"
+  "selected_checkpoint": "models/alphazero/alphazero_4x4_best.pt",
+  "source_checkpoint": "models/alphazero/alphazero_4x4_best.pt"
 }
