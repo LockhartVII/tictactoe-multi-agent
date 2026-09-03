@@ -11,6 +11,21 @@
 
 三张 GIF 使用同一个 4×4 棋盘和同一个 MCTS 对手：训练早期输棋，中期守成打平，晚期找到胜法。红色棋子是 AlphaZero，蓝色棋子是 MCTS；画面中的 self-play 数量、搜索次数和 step 来自对应的对局日志。
 
+## 各尺寸策略对战结果
+
+`evaluation/figures/` 中的四张图分别对应 3×3、4×4、5×5 和 9×9，展示各策略的胜负以及先手、后手得分。3×3 的 `alpha_zero` 使用项目自己训练的最佳模型。
+
+<table>
+  <tr>
+    <td><img src="evaluation/figures/strategy_tournament.png" alt="3x3 strategy tournament" width="100%" /></td>
+    <td><img src="evaluation/figures/multiboard_4x4.png" alt="4x4 strategy tournament" width="100%" /></td>
+  </tr>
+  <tr>
+    <td><img src="evaluation/figures/multiboard_5x5.png" alt="5x5 strategy tournament" width="100%" /></td>
+    <td><img src="evaluation/figures/multiboard_9x9.png" alt="9x9 strategy tournament" width="100%" /></td>
+  </tr>
+</table>
+
 ## 项目结构
 
 ```text
@@ -96,20 +111,7 @@ python multiboard_tournament.py --size 9 --focus-alpha-zero --alpha-simulations 
 
 `--focus-alpha-zero` 只跑 AlphaZero 对 `random`、`heuristic` 和 `mcts` 的定向对局，适合 9×9 这类搜索成本较高的尺寸；`--alpha-simulations` 和 `--baseline-simulations` 可以分别控制双方的搜索预算。3×3 的完美 Minimax 理论上不会输，AlphaZero 在这个尺寸的合理验收标准是保持不败；4×4、5×5 和 9×9 再观察实际胜负与结束步数。
 
-## 各尺寸策略对战结果
-
-下面四张图分别对应 3×3、4×4、5×5 和 9×9 的策略对战。3×3 的 `alpha_zero` 使用项目里自己训练的 `models/alphazero/alphazero_3x3_best.pt`，其余尺寸使用各自筛选出的最佳 checkpoint。每张图都同时保留胜负统计，以及先手和后手的得分对比。
-
-<table>
-  <tr>
-    <td><img src="evaluation/figures/strategy_tournament.png" alt="3x3 strategy tournament" width="100%" /></td>
-    <td><img src="evaluation/figures/multiboard_4x4.png" alt="4x4 strategy tournament" width="100%" /></td>
-  </tr>
-  <tr>
-    <td><img src="evaluation/figures/multiboard_5x5.png" alt="5x5 strategy tournament" width="100%" /></td>
-    <td><img src="evaluation/figures/multiboard_9x9.png" alt="9x9 strategy tournament" width="100%" /></td>
-  </tr>
-</table>
+## 训练结果与最佳模型
 
 当前保留的最佳模型和最近一次 tournament 摘要如下。训练盘数按 `training_<size>x<size>.jsonl` 中已经记录的 self-play 盘数统计，模型选择先取训练 loss 最低的一轮，再单独进行 tournament；表中的分数来自各尺寸对应的 CSV/JSON 结果文件，最后一列可以直接打开对应的最佳 `.pt` 文件。
 
