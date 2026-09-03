@@ -72,15 +72,18 @@ class KataGoAdapter:
         return chr(ord("A") + column + (1 if column >= 8 else 0))
 
     def play(self, colour, row, column):
-        self._command("play", "B" if colour == 2 else "W", f"{self._gtp_column(column)}{self.board_size - row}")
+        self._command("play", "B" if colour == 1 else "W", f"{self._gtp_column(column)}{self.board_size - row}")
+
+    def play_pass(self, colour):
+        self._command("play", "B" if colour == 1 else "W", "pass")
 
     def genmove(self, colour):
-        lines = self._command("genmove", "B" if colour == 2 else "W")
+        lines = self._command("genmove", "B" if colour == 1 else "W")
         if not lines:
-            return None
+            return "pass"
         move = lines[-1].lstrip("=").strip().lower()
         if move == "pass" or len(move) < 2:
-            return None
+            return "pass"
         column = ord(move[0].upper()) - ord("A") - (1 if move[0].upper() > "I" else 0)
         row = self.board_size - int(move[1:])
         return row, column

@@ -98,8 +98,14 @@ def go_liberties(board, group, size):
     return len({point for stone in group for point in go_neighbors(*stone, size) if board[point[0]][point[1]] == 0})
 
 
-def go_play(board, row, column, colour):
+def go_position_key(board):
+    return tuple(tuple(line) for line in board)
+
+
+def go_play(board, row, column, colour, history=None):
     size = len(board)
+    if not (0 <= row < size and 0 <= column < size):
+        return False
     if board[row][column] != 0:
         return False
     trial = [line.copy() for line in board]
@@ -113,9 +119,46 @@ def go_play(board, row, column, colour):
                     trial[stone[0]][stone[1]] = 0
     if go_liberties(trial, go_group(trial, row, column, size), size) == 0:
         return False
+    position_key = go_position_key(trial)
+    if history is not None and position_key in history:
+        return False
     for row_index in range(size):
         board[row_index][:] = trial[row_index]
+    if history is not None:
+        history.add(position_key)
     return True
+
+
+def go_area_score(board):
+    """Return Chinese area scores: stones plus surrounded empty points."""
+    size = len(board)
+    score = {1: 0.0, 2: 7.5}
+    visited = set()
+    for row in range(size):
+        for column in range(size):
+            stone = board[row][column]
+            if stone:
+                score[stone] += 1
+                continue
+            if (row, column) in visited:
+                continue
+            region = {(row, column)}
+            border_colours = set()
+            stack = [(row, column)]
+            visited.add((row, column))
+            while stack:
+                current = stack.pop()
+                for neighbour in go_neighbors(*current, size):
+                    value = board[neighbour[0]][neighbour[1]]
+                    if value == 0 and neighbour not in visited:
+                        visited.add(neighbour)
+                        region.add(neighbour)
+                        stack.append(neighbour)
+                    elif value:
+                        border_colours.add(value)
+            if len(border_colours) == 1:
+                score[next(iter(border_colours))] += len(region)
+    return score
 
 
 def xiangqi_moves(board, row, column):
@@ -203,6 +246,12 @@ class OtherGamesController:
         self.go_engine = None
         self.xiangqi_engine = None
         self.engine_status = "Built-in rules"
+        self.go_history = set()
+        self.go_passes = 0
+        self.go_result = ""
+        self.xiangqi_history = {}
+        self.xiangqi_halfmove = 0
+        self.xiangqi_result = ""
 
     @property
     def title(self):
@@ -216,10 +265,20 @@ class OtherGamesController:
         self.draw_game = False
         self.winner = 0
         self.selected = None
+        self.go_history = set()
+        self.go_passes = 0
+        self.go_result = ""
+        self.xiangqi_history = {}
+        self.xiangqi_halfmove = 0
+        self.xiangqi_result = ""
         if kind == "xiangqi":
             self.board = [row.copy() for row in XIANGQI_INIT]
         else:
             self.board = [[0 for _ in range(size)] for _ in range(size)]
+        if kind == "go":
+            self.go_history.add(go_position_key(self.board))
+        elif kind == "xiangqi":
+            self.xiangqi_history[self.xiangqi_position_key()] = 1
         self.engine_status = "Built-in rules"
         if mode != "human_vs_human":
             try:
@@ -246,13 +305,17 @@ class OtherGamesController:
         if not (0 <= row < self.size and 0 <= column < self.size):
             return
         if self.kind == "go":
-            if go_play(self.board, row, column, self.current_player):
+            if self.mode == "human_vs_ai" and self.current_player != 1:
+                return
+            if go_play(self.board, row, column, self.current_player, self.go_history):
                 if self.go_engine:
                     try:
                         self.go_engine.play(self.current_player, row, column)
                     except ProtocolError as error:
                         self.engine_status = "AI error: " + str(error)
+                self.go_passes = 0
                 self.current_player = 2 if self.current_player == 1 else 1
+                self.ai_wait_until = 0.0
         elif self.current_player == 1 or self.mode == "human_vs_human":
             if self.board[row][column] == 0:
                 self.board[row][column] = self.current_player
@@ -280,15 +343,8 @@ class OtherGamesController:
             return
         if (row, column) in xiangqi_moves(self.board, *self.selected):
             old_row, old_column = self.selected
-            captured = self.board[row][column]
-            self.board[row][column] = self.board[old_row][old_column]
-            self.board[old_row][old_column] = ""
             self.selected = None
-            if captured.lower() == "k":
-                self.game_over = True
-                self.winner = self.current_player
-            else:
-                self.current_player = 2 if self.current_player == 1 else 1
+            self._apply_xiangqi_move((old_row, old_column, row, column))
         elif piece and piece.isupper() == (self.current_player == 1):
             self.selected = (row, column)
         else:
@@ -320,11 +376,16 @@ class OtherGamesController:
             try:
                 move = self.go_engine.genmove(self.current_player)
                 if move is None:
-                    self.game_over = True
-                    self.draw_game = True
+                    raise ProtocolError("KataGo returned no move")
+                if move == "pass":
+                    self._register_go_pass(sync_engine=False)
                 elif not go_play(self.board, move[0], move[1], self.current_player):
                     self.engine_status = "AI returned an illegal move"
                     self.game_over = True
+                else:
+                    self.go_passes = 0
+                    self.current_player = 2 if self.current_player == 1 else 1
+                    move = (move[0], move[1])
             except (ProtocolError, ValueError) as error:
                 self.engine_status = "AI error: " + str(error)
                 self.game_over = True
@@ -340,9 +401,33 @@ class OtherGamesController:
                 self.game_over = True
         if move is not None and not self.game_over and self.kind == "gomoku":
             self._finish_if_needed()
-        if move is not None and not self.game_over and self.kind != "xiangqi":
+        if move is not None and not self.game_over and self.kind == "gomoku":
             self.current_player = 2 if self.current_player == 1 else 1
         self.ai_wait_until = now + 0.3
+
+    def _register_go_pass(self, sync_engine=True):
+        if sync_engine and self.go_engine:
+            try:
+                self.go_engine.play_pass(self.current_player)
+            except ProtocolError as error:
+                self.engine_status = "AI error: " + str(error)
+                self.game_over = True
+                return
+        self.go_passes += 1
+        if self.go_passes >= 2:
+            scores = go_area_score(self.board)
+            self.go_result = f"Black {scores[1]:.1f} · White {scores[2]:.1f}"
+            self.game_over = True
+            self.draw_game = False
+        else:
+            self.current_player = 2 if self.current_player == 1 else 1
+
+    def pass_turn(self):
+        if self.kind != "go" or self.game_over or self.mode == "ai_vs_ai":
+            return
+        if self.mode == "human_vs_ai" and self.current_player != 1:
+            return
+        self._register_go_pass()
 
     def _apply_xiangqi_move(self, move):
         old_row, old_column, row, column = move
@@ -356,6 +441,20 @@ class OtherGamesController:
             self.winner = self.current_player
         else:
             self.current_player = 2 if self.current_player == 1 else 1
+        self.xiangqi_halfmove = 0 if captured else self.xiangqi_halfmove + 1
+        position_key = self.xiangqi_position_key()
+        self.xiangqi_history[position_key] = self.xiangqi_history.get(position_key, 0) + 1
+        if not self.game_over and self.xiangqi_history[position_key] >= 3:
+            self.xiangqi_result = "Threefold repetition"
+            self.game_over = True
+            self.draw_game = True
+        elif not self.game_over and self.xiangqi_halfmove >= 120:
+            self.xiangqi_result = "120 moves without capture"
+            self.game_over = True
+            self.draw_game = True
+
+    def xiangqi_position_key(self):
+        return tuple(tuple(row) for row in self.board), self.current_player
 
     def close_engines(self):
         for engine in (self.go_engine, self.xiangqi_engine):
@@ -429,8 +528,34 @@ class OtherGamesController:
         for row in range(10):
             y = round(top + row * cell_y)
             pygame.draw.line(surface, colour, (round(left), y), (round(right), y), 2)
-        text(surface, "楚河", (round(left + 2.4 * cell_x), round(river_y)), 25, (242, 207, 143), bold=True, anchor="center")
-        text(surface, "汉界", (round(left + 6.6 * cell_x), round(river_y)), 25, (242, 207, 143), bold=True, anchor="center")
+
+        def point(row, column):
+            return round(left + column * cell_x), round(top + row * cell_y)
+
+        # The two diagonal palace lines are part of the board, not decorations.
+        pygame.draw.line(surface, colour, point(0, 3), point(2, 5), 2)
+        pygame.draw.line(surface, colour, point(0, 5), point(2, 3), 2)
+        pygame.draw.line(surface, colour, point(7, 3), point(9, 5), 2)
+        pygame.draw.line(surface, colour, point(7, 5), point(9, 3), 2)
+
+        # Traditional flower marks identify cannon and soldier intersections.
+        for row, columns in ((2, (1, 7)), (3, (0, 2, 4, 6, 8)), (6, (0, 2, 4, 6, 8)), (7, (1, 7))):
+            for column in columns:
+                x, y = point(row, column)
+                size, gap = 7, 4
+                for x_direction in (-1, 1):
+                    for y_direction in (-1, 1):
+                        if column in (0, 8) and x_direction != (1 if column == 0 else -1):
+                            continue
+                        pygame.draw.line(surface, colour, (x + x_direction * gap, y + y_direction * size), (x + x_direction * size, y + y_direction * size), 1)
+                        pygame.draw.line(surface, colour, (x + x_direction * size, y + y_direction * gap), (x + x_direction * size, y + y_direction * size), 1)
+
+        # Clear only the label plates, so no grid stroke runs through 河界 text.
+        label_colour = (74, 50, 30)
+        for label, x in (("楚河", left + 2.4 * cell_x), ("汉界", left + 6.6 * cell_x)):
+            plate = pygame.Rect(round(x - 52), round(river_y - 22), 104, 44)
+            pygame.draw.rect(surface, label_colour, plate)
+            text(surface, label, (round(x), round(river_y)), 25, (242, 207, 143), bold=True, anchor="center")
         for row in range(10):
             for column in range(9):
                 piece = self.board[row][column]

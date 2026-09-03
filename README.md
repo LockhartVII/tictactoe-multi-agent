@@ -82,6 +82,7 @@ tictactoe/
 `alpha_zero` 会根据棋盘尺寸加载对应的 checkpoint，使用 policy/value 网络引导 MCTS，再由搜索结果决定动作。训练入口会自己生成棋盘状态、搜索分布和最终胜负标签，不需要另外准备动作数据集；模型文件暂时不可用时，策略入口会回退到兼容推理或普通 MCTS。
 
 围棋和中国象棋使用独立的原生引擎接口。KataGo 的网络文件放在 `models/go/`，Pikafish 的 NNUE 文件随引擎放在 `engines/pikafish/`；这两个目录只保存本地运行资源，不提交到仓库。GUI 的 AI vs AI 模式会让两边轮流向同一个引擎请求着法，并把引擎结果重新写入当前棋盘，因而也能用于演示和测试。
+围棋控制器按 9×9 中国规则处理落子、提子、自杀禁着、全局劫、停着和连续两次停着终局，并在终局按子数、领地和 7.5 贴目显示结果。象棋控制器会记录局面重复和无吃子回合：同一局面第三次出现，或连续 120 个半回合没有吃子，都会判和，AI vs AI 也适用。
 
 ## 完整 AlphaZero 训练
 
@@ -275,6 +276,12 @@ python main.py
 
 ```bash
 python upgrade.py
+```
+
+运行棋规回归测试：
+
+```bash
+python -m unittest discover -s tests -v
 ```
 
 进入井字棋后，先选择棋盘规模，再选择人机或 AI 对战；人机模式可以选择自己执 X 或 O，AI 对战时可以分别指定 X、O 的策略。进入 More games 后可以选择五子棋、围棋或中国象棋，并选择 Human vs AI、AI vs AI 或 Human vs Human。界面会按尺寸加载 `models/alphazero/*_best.pt`，围棋和象棋则从相对目录启动 KataGo 或 Pikafish。对局日志统一保存到 `logs/gui/`。GUI 的操作文字全部使用英文，象棋棋子和楚河汉界保留中文棋面字样，菜单、配置页和棋盘页采用统一的深色科技风格。

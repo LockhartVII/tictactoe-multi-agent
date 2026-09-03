@@ -144,6 +144,9 @@ class BoardGameApp:
 
     def handle_other_game(self, position):
         board_rect = pygame.Rect(44, 108, 700, 650)
+        if self.other_kind == "go" and pygame.Rect(820, 520, 150, 48).collidepoint(position):
+            self.other.pass_turn()
+            return
         self.other.click(position, board_rect)
         if pygame.Rect(790, 690, 210, 54).collidepoint(position):
             size = 9 if self.other_kind == "go" else self.other_size
@@ -271,12 +274,20 @@ class BoardGameApp:
         panel(self.screen, pygame.Rect(790, 108, 410, 520), PANEL_2, PURPLE)
         text(self.screen, self.other.title, (820, 135), 28, TEXT, bold=True)
         if self.other.game_over:
-            status = "Draw" if self.other.draw_game else f"{('Red' if self.other.winner == 1 else 'Black')} wins"
+            if self.other.kind == "go" and self.other.go_result:
+                status = self.other.go_result
+            else:
+                status = "Draw" if self.other.draw_game else f"{('Red' if self.other.winner == 1 else 'Black')} wins"
         else:
-            status = "Red to move" if self.other.current_player == 1 else "Black to move"
+            if self.other.kind == "go":
+                status = "Black to move" if self.other.current_player == 1 else "White to move"
+            else:
+                status = "Red to move" if self.other.current_player == 1 else "Black to move"
         text(self.screen, status, (820, 190), 22, YELLOW if self.other.game_over else GREEN)
         text(self.screen, "Click inside the board to play", (820, 280), 16, MUTED)
         text(self.screen, self.other.engine_status, (820, 320), 15, CYAN if "AI" not in self.other.engine_status else YELLOW)
+        if self.other.kind == "go" and not self.other.game_over:
+            button(self.screen, pygame.Rect(820, 520, 150, 48), "Pass", False, pygame.Rect(820, 520, 150, 48).collidepoint(mouse), CYAN, small=True)
         self.draw_game_buttons(mouse)
 
     def draw_back_button(self, mouse):
