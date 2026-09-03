@@ -5,6 +5,8 @@ import json
 import queue
 import os
 
+from strategies import alpha_beta_move, alpha_zero_move, mcts_move
+
 from environment import (
     empty,
     available,
@@ -105,6 +107,12 @@ def player_agent(
 
             if strategy == "heuristic":
                 move = heuristic_move(board, mark)
+            elif strategy == "alpha_beta":
+                move = alpha_beta_move(board, mark)
+            elif strategy == "mcts":
+                move = mcts_move(board, mark)
+            elif strategy in ("alpha_zero", "alphazero"):
+                move = alpha_zero_move(board, mark)
             else:
                 move = random_move(board)
 

@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*.log
+messages*.jsonl
+.idea/
+.playwright-cli/
+.venv/
+*.iml

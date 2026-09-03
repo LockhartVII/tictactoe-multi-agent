@@ -1,4 +1,5 @@
 import json
+import argparse
 import multiprocessing as mp
 import os
 
@@ -11,6 +12,7 @@ from main import (
     referee_agent,
     route_message
 )
+from strategies import alpha_beta_move, alpha_zero_move, mcts_move
 
 # Minimax算法
 def minimax(board, current_mark, maximizing_mark):
@@ -99,6 +101,15 @@ def player_agent(
             elif strategy == "minimax":
                 move = minimax_move(board, mark)
 
+            elif strategy == "alpha_beta":
+                move = alpha_beta_move(board, mark)
+
+            elif strategy == "mcts":
+                move = mcts_move(board, mark)
+
+            elif strategy in ("alpha_zero", "alphazero"):
+                move = alpha_zero_move(board, mark)
+
             elif strategy == "random":
                 move = random_move(board)
 
@@ -155,8 +166,35 @@ def run_minimax_tests():
 
     print("Minimax三个策略测试通过。")
 
+
+def run_new_strategy_tests():
+    """测试Alpha-Beta和MCTS返回合法且关键动作正确。"""
+    win_board = [
+        "O", "O", " ",
+        "X", "X", " ",
+        " ", " ", " "
+    ]
+    assert alpha_beta_move(win_board, "O") == 2
+    assert mcts_move(win_board, "O", simulations=50, seed=1) == 2
+
+    block_board = [
+        "X", "X", " ",
+        "O", " ", " ",
+        " ", "O", " "
+    ]
+    assert alpha_beta_move(block_board, "O") == 2
+    assert mcts_move(block_board, "O", simulations=50, seed=1) == 2
+
+    empty_board = [" "] * 9
+    alpha_beta_result = alpha_beta_move(empty_board, "X")
+    mcts_result = mcts_move(empty_board, "X", simulations=200, seed=1)
+    assert alpha_beta_result in available(empty_board)
+    assert mcts_result in available(empty_board)
+
+    print("Alpha-Beta和MCTS策略测试通过。")
+
 # 完整多智能体游戏
-def run_one_game(game_number):
+def run_one_game(game_number, player_x_strategy="heuristic", player_o_strategy="minimax"):
     """启动四个Agent进程，运行一局并返回结果。"""
     bus = mp.Queue()
 
@@ -172,18 +210,17 @@ def run_one_game(game_number):
         args=(
             "player_x",
             "X",
-            "heuristic",
+            player_x_strategy,
             inboxes["player_x"],
             bus
         )
     )
-    # 第三天的核心修改：Player O使用minimax策略。
     player_o = mp.Process(
         target=player_agent,
         args=(
             "player_o",
             "O",
-            "minimax",
+            player_o_strategy,
             inboxes["player_o"],
             bus
         )
@@ -285,15 +322,34 @@ def print_results(results):
     print("平局：", results.count("DRAW"))
 
 def main():
+    parser = argparse.ArgumentParser(description="多智能体井字棋策略对战")
+    parser.add_argument(
+        "--x-strategy",
+        default="heuristic",
+        choices=("heuristic", "minimax", "alpha_beta", "mcts", "alpha_zero", "random"),
+    )
+    parser.add_argument(
+        "--o-strategy",
+        default="minimax",
+        choices=("heuristic", "minimax", "alpha_beta", "mcts", "alpha_zero", "random"),
+    )
+    parser.add_argument("--games", type=int, default=5)
+
     run_minimax_tests()
+    run_new_strategy_tests()
     results = []
-    for game_number in range(1, 6):
+    args = parser.parse_args()
+    for game_number in range(1, args.games + 1):
         print("\n========== 第", game_number, "局 ==========")
-        result = run_one_game(game_number)
+        result = run_one_game(
+            game_number,
+            player_x_strategy=args.x_strategy,
+            player_o_strategy=args.o_strategy,
+        )
         results.append(result)
 
     print_results(results)
-    print("\n五局完整MAS测试通过，Logger日志已生成。")
+    print("\n完整MAS测试通过，Logger日志已生成。")
 
 if __name__ == "__main__":
     mp.freeze_support()
