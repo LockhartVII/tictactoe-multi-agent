@@ -204,7 +204,7 @@ class BoardGameApp:
             o_label = "O strategy (AI)" if self.ttt_human_side == "X" else "O strategy (Human)"
         else:
             x_label, o_label = "X strategy", "O strategy"
-        label_y = strategy_y - 16 if self.ttt_mode == "human_vs_ai" else strategy_y - 40
+        label_y = strategy_y - 32 if self.ttt_mode == "human_vs_ai" else strategy_y - 40
         text(self.screen, x_label, (180, label_y), 17, MUTED)
         text(self.screen, o_label, (630, label_y), 17, MUTED)
         x_enabled = self.ttt_mode == "ai_vs_ai" or self.ttt_human_side == "O"

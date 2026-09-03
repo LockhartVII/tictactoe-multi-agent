@@ -224,10 +224,9 @@ class OtherGamesController:
             return
         if not board_rect.collidepoint(position):
             return
-        margin = 28
-        cell = (board_rect.width - 2 * margin) / (self.size - 1)
-        column = round((position[0] - board_rect.left - margin) / cell)
-        row = round((position[1] - board_rect.top - margin) / cell)
+        origin_x, origin_y, cell = self._grid_geometry(board_rect)
+        column = round((position[0] - origin_x) / cell)
+        row = round((position[1] - origin_y) / cell)
         if not (0 <= row < self.size and 0 <= column < self.size):
             return
         if self.kind == "go":
@@ -298,20 +297,21 @@ class OtherGamesController:
 
     def _draw_grid_game(self, surface, board_rect):
         pygame.draw.rect(surface, (25, 31, 47), board_rect, border_radius=16)
-        margin = 28
-        cell = (board_rect.width - 2 * margin) / (self.size - 1)
+        origin_x, origin_y, cell = self._grid_geometry(board_rect)
         for index in range(self.size):
-            x = round(board_rect.left + margin + index * cell)
-            y = round(board_rect.top + margin + index * cell)
-            pygame.draw.line(surface, GRID_BRIGHT, (x, board_rect.top + margin), (x, board_rect.bottom - margin), 1)
-            pygame.draw.line(surface, GRID_BRIGHT, (board_rect.left + margin, y), (board_rect.right - margin, y), 1)
+            x = round(origin_x + index * cell)
+            y = round(origin_y + index * cell)
+            pygame.draw.line(surface, GRID_BRIGHT, (x, round(origin_y)),
+                             (x, round(origin_y + (self.size - 1) * cell)), 1)
+            pygame.draw.line(surface, GRID_BRIGHT, (round(origin_x), y),
+                             (round(origin_x + (self.size - 1) * cell), y), 1)
         radius = max(7, int(cell * 0.34))
         for row in range(self.size):
             for column in range(self.size):
                 stone = self.board[row][column]
                 if not stone:
                     continue
-                center = (round(board_rect.left + margin + column * cell), round(board_rect.top + margin + row * cell))
+                center = (round(origin_x + column * cell), round(origin_y + row * cell))
                 colour = (30, 36, 48) if stone == 2 else RED
                 pygame.draw.circle(surface, (4, 8, 15), (center[0] + 2, center[1] + 3), radius)
                 pygame.draw.circle(surface, colour, center, radius)
@@ -319,6 +319,18 @@ class OtherGamesController:
                     pygame.draw.circle(surface, CYAN, center, radius, 2)
         if self.kind == "gomoku":
             text(surface, "Black to move" if self.current_player == 1 else "White to move", (board_rect.left, board_rect.bottom + 12), 18, RED if self.current_player == 1 else CYAN)
+
+    def _grid_geometry(self, board_rect):
+        """Return a square, centered grid that always stays inside board_rect."""
+        padding = 28
+        cell = min(
+            (board_rect.width - 2 * padding) / (self.size - 1),
+            (board_rect.height - 2 * padding) / (self.size - 1),
+        )
+        grid_width = cell * (self.size - 1)
+        origin_x = board_rect.left + (board_rect.width - grid_width) / 2
+        origin_y = board_rect.top + (board_rect.height - grid_width) / 2
+        return origin_x, origin_y, cell
 
     def _draw_xiangqi(self, surface, board_rect):
         pygame.draw.rect(surface, (51, 35, 23), board_rect, border_radius=16)
