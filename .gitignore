@@ -13,3 +13,6 @@ engines/
 models/go/
 engines/katago/runtime/gtp_logs/
 gui_latest_*.png
+build/
+dist/
+release/

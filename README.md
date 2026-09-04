@@ -1,4 +1,6 @@
-# Multi-Agent Board Lab
+# Qizhi Agent
+
+Qizhi Agent（棋智 Agent）是一个多智能体棋类实验项目，安装包和窗口标题也采用这个名称。
 
 这是一个用 Python 写的多智能体棋类实验项目。井字棋覆盖 3×3、4×4、5×5 和 9×9，另外提供五子棋、9×9 围棋和中国象棋。项目把多进程通信、角色分工、策略替换、训练记录、对局评测和图形界面放在同一个可以直接运行的工程里；棋盘规则、AI 决策和界面彼此独立，方便替换策略和扩展棋类。
 井字棋支持随机、启发式、Minimax、Alpha-Beta、MCTS，以及 policy/value 网络配合神经 MCTS 的 AlphaZero 推理和自我对弈训练。围棋与中国象棋在 GUI 中接入了各自原生协议的强引擎：KataGo 使用 9×9 网络，Pikafish 使用 NNUE。它们不是把不同格式的权重改名成 `.pt`，而是通过 GTP/UCI 适配层调用，所以模型确实参与了落子。所有棋类都支持人机对战和 AI 对战；缺少外部运行包时，界面会明确显示 AI 不可用，而不会静默给出一手假棋。
@@ -346,6 +348,18 @@ python -m scripts.tournament --strategies heuristic minimax alpha_beta mcts
 ---+---+---
 6 | 7 | 8
 ```
+
+## Windows 安装包
+
+Windows 用户可以直接使用 `release/QizhiAgent-Setup.exe`。安装程序会把 Qizhi Agent、四个最佳井字棋模型、KataGo、Pikafish 和对应运行库一起安装，并创建桌面和开始菜单快捷方式；安装完成后不需要 Python 或 Conda。当前安装包面向 Windows x86-64，包含 CUDA 运行组件，体积约 1.6 GB。
+
+如果要在自己的机器上重新生成安装包，先进入项目的 `tictactoe-gpu` 环境，再运行：
+
+```powershell
+pwsh -ExecutionPolicy Bypass -File packaging\build_windows.ps1
+```
+
+生成文件为 `release/QizhiAgent-Setup.exe`。安装包没有购买代码签名证书，因此 Windows SmartScreen 可能显示未知发布者提示；确认文件来自可信来源后即可继续安装。
 
 ## PyCharm
 

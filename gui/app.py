@@ -19,7 +19,7 @@ SCREEN_OTHER_GAME = "other_game"
 class BoardGameApp:
     def __init__(self):
         pygame.init()
-        pygame.display.set_caption("Multi-Agent Board Lab")
+        pygame.display.set_caption("Qizhi Agent | Multi-Game AI")
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
         self.running = True
